@@ -37,6 +37,16 @@ h1 {
     justify-content: center;
 }
 
+.button-group.disabled button {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.loading-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
 .test-actions {
     display: flex;
     gap: 10px;

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import './App.css';
 import ReactToPrint from 'react-to-print';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faTimesCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 
 Modal.setAppElement('#root');
@@ -19,6 +19,7 @@ function App() {
     const [testID, setTestID] = useState('');
     const [outputText, setOutputText] = useState('');
     const [selectedTestID, setSelectedTestID] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const componentRef = useRef();
 
     useEffect(() => {
@@ -31,6 +32,7 @@ function App() {
     }, []);
 
     const startTest = async () => {
+        setIsLoading(true);
         try {
             const response = await fetch(`http://localhost:3001/${selectedEndpoint}/${testID}`, {
                 method: 'PUT',
@@ -48,9 +50,11 @@ function App() {
         } catch (error) {
             alert('An error occurred while starting the test.');
         }
+        setTimeout(() => setIsLoading(false), 5000);
     };
 
     const sendOutput = async () => {
+        setIsLoading(true);
         try {
             const response = await fetch(`http://localhost:3001/test-output/${selectedTestID}`, {
                 method: 'POST',
@@ -70,9 +74,11 @@ function App() {
         } catch (error) {
             alert('An error occurred while sending the output.');
         }
+        setTimeout(() => setIsLoading(false), 5000);
     };
 
     const deleteTest = async (testID) => {
+        setIsLoading(true);
         const response = await fetch(`http://localhost:3001/test/${testID}`, {
             method: 'DELETE',
             headers: {
@@ -88,10 +94,12 @@ function App() {
         } else {
             alert('Error deleting the test.');
         }
+        setTimeout(() => setIsLoading(false), 5000);
     };
 
     const deleteAllTests = async () => {
         if (window.confirm('Do you really want to delete all listed tests?')) {
+            setIsLoading(true);
             const response = await fetch('http://localhost:3001/tests', {
                 method: 'DELETE',
                 headers: {
@@ -103,29 +111,31 @@ function App() {
             } else {
                 alert('Error deleting all tests.');
             }
+            setTimeout(() => setIsLoading(false), 5000);
         }
     };
 
     return (
         <div className="App">
             <header className="header">
-                <img src="/logo1.png" alt="Logo 1" className="logo" />
-                <img src="/logo2.png" alt="Logo 2" className="logo" />
-                <h1>Mirco Test-Process-Manager</h1>
+                <img src="/logo_400.png" alt="Logo" className="logo"/>
+                <h1>Test-Process-Manager</h1>
+                <h2>by Mirco Recknagel</h2>
             </header>
-            <div className="button-group">
+            {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon" />}
+            <div className={`button-group ${isLoading ? 'disabled' : ''}`}>
                 <div className="test-actions">
-                    <button className="start-test-button" onClick={() => setIsStartModalOpen(true)}>Start Test</button>
-                    <button className="send-output-button" onClick={() => setIsOutputModalOpen(true)}>Send Output</button>
+                    <button className="start-test-button" onClick={() => !isLoading && setIsStartModalOpen(true)} disabled={isLoading}>Start Test</button>
+                    <button className="send-output-button" onClick={() => !isLoading && setIsOutputModalOpen(true)} disabled={isLoading}>Send Output</button>
                 </div>
                 <div className="print-report">
                     <ReactToPrint
-                        trigger={() => <button className="print-button">Print Report</button>}
+                        trigger={() => <button className="print-button" disabled={isLoading}>Print Report</button>}
                         content={() => componentRef.current}
                     />
                 </div>
                 <div className="delete-all">
-                    <button className="delete-all-button" onClick={deleteAllTests}>Delete All</button>
+                    <button className="delete-all-button" onClick={deleteAllTests} disabled={isLoading}>Delete All</button>
                 </div>
             </div>
             <div ref={componentRef} className="test-container">
@@ -137,15 +147,17 @@ function App() {
                         output={tests[testID].output}
                         index={index}
                         deleteTest={deleteTest}
+                        isLoading={isLoading}
                     />
                 ))}
             </div>
 
             <Modal isOpen={isStartModalOpen} onRequestClose={() => setIsStartModalOpen(false)} className="modal" overlayClassName="overlay">
                 <h2>Start Test</h2>
+                {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon" />}
                 <div>
                     <label>Endpoint:</label>
-                    <select value={selectedEndpoint} onChange={(e) => setSelectedEndpoint(e.target.value)}>
+                    <select value={selectedEndpoint} onChange={(e) => setSelectedEndpoint(e.target.value)} disabled={isLoading}>
                         <option value="selenium-test">Selenium</option>
                         <option value="playwright-test">Playwright</option>
                         <option value="uft-test">UFT</option>
@@ -153,17 +165,18 @@ function App() {
                 </div>
                 <div>
                     <label>Test ID:</label>
-                    <input type="text" value={testID} onChange={(e) => setTestID(e.target.value)} />
+                    <input type="text" value={testID} onChange={(e) => setTestID(e.target.value)} disabled={isLoading} />
                 </div>
-                <button onClick={startTest}>Send Request</button>
-                <button onClick={() => setIsStartModalOpen(false)}>Close</button>
+                <button onClick={startTest} disabled={isLoading}>Send Request</button>
+                <button onClick={() => setIsStartModalOpen(false)} disabled={isLoading}>Close</button>
             </Modal>
 
             <Modal isOpen={isOutputModalOpen} onRequestClose={() => setIsOutputModalOpen(false)} className="modal" overlayClassName="overlay">
                 <h2>Send Output</h2>
+                {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon" />}
                 <div>
                     <label>Test ID:</label>
-                    <select value={selectedTestID} onChange={(e) => setSelectedTestID(e.target.value)}>
+                    <select value={selectedTestID} onChange={(e) => setSelectedTestID(e.target.value)} disabled={isLoading}>
                         {Object.keys(tests).map(testID => (
                             <option key={testID} value={testID}>{testID}</option>
                         ))}
@@ -171,16 +184,16 @@ function App() {
                 </div>
                 <div>
                     <label>Output:</label>
-                    <textarea value={outputText} onChange={(e) => setOutputText(e.target.value)} />
+                    <textarea value={outputText} onChange={(e) => setOutputText(e.target.value)} disabled={isLoading} />
                 </div>
-                <button onClick={sendOutput}>Send Output</button>
-                <button onClick={() => setIsOutputModalOpen(false)}>Close</button>
+                <button onClick={sendOutput} disabled={isLoading}>Send Output</button>
+                <button onClick={() => setIsOutputModalOpen(false)} disabled={isLoading}>Close</button>
             </Modal>
         </div>
     );
 }
 
-function TestCard({ testID, type, output, index, deleteTest }) {
+function TestCard({ testID, type, output, index, deleteTest, isLoading }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const cardClass = index % 2 === 0 ? 'test-card darker' : 'test-card lighter';
     const lastStatus = output.map(o => o.message).reverse().find(message => message.includes("500:failed") || message.includes("200:success"));
@@ -189,8 +202,8 @@ function TestCard({ testID, type, output, index, deleteTest }) {
     return (
         <div className={cardClass}>
             <h3>{`Test (${testID}) - ${type.toUpperCase()} Endpoint`}</h3>
-            <button onClick={() => deleteTest(testID)} className="delete-button">Delete</button>
-            <button onClick={() => setIsCollapsed(!isCollapsed)} className="toggle-button">
+            <button onClick={() => !isLoading && deleteTest(testID)} className="delete-button" disabled={isLoading}>Delete</button>
+            <button onClick={() => setIsCollapsed(!isCollapsed)} className="toggle-button" disabled={isLoading}>
                 {isCollapsed ? 'Expand' : 'Collapse'}
             </button>
             {status && (

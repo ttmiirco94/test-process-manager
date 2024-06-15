@@ -4,3 +4,8 @@
 /frontend/node_modules
 /backend/.idea
 /backend/node_modules
+/test-frameworks/**/.idea
+/test-frameworks/**/node_modules
+/test-frameworks/**/test-results
+/test-frameworks/**/playwright-report
+/test-frameworks/**/target
