@@ -7,6 +7,7 @@ const moment = require('moment-timezone');
 const basicAuth = require('express-basic-auth');
 const { exec } = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -23,9 +24,11 @@ app.use(basicAuth({
 }));
 
 // Path to your test automation project directories
-const mavenProjectPath = 'C:\\Users\\mirco\\Desktop\\test-process-manager\\test-frameworks\\selenium-quickstarter-master';
-const uftProjectPath = '/path/to/your/uft/project';
-const playwrightProjectPath = 'C:\\Users\\mirco\\Desktop\\test-process-manager\\test-frameworks\\playwright-typescript-poc';
+// Constructing the path dynamically
+const baseDir = __dirname;
+const playwrightProjectPath = path.join(baseDir, '..', 'test-frameworks', 'playwright-typescript-poc');
+const mavenProjectPath = path.join(baseDir, '..', 'test-frameworks', 'selenium-quickstarter-master');
+const uftProjectPath = path.join(baseDir, '..', 'test-frameworks', '/path/to/your/uft/project');
 
 let runningTests = {};
 let latestTestResults = {};
@@ -254,7 +257,6 @@ app.post('/test-output/:testID', (req, res) => {
     res.sendStatus(200);
 });
 
-// Endpoint to check if a testID exists and return test results
 app.get('/test-results/:testID', (req, res) => {
     const testID = req.params.testID;
 
@@ -266,7 +268,6 @@ app.get('/test-results/:testID', (req, res) => {
     res.status(200).json(runningTests[testID]);
 });
 
-// Add a new POST endpoint to store test data
 app.post('/store-test-data/:testID', (req, res) => {
     const testID = req.params.testID;
     const testData = req.body;
@@ -285,7 +286,6 @@ app.post('/store-test-data/:testID', (req, res) => {
     res.status(200).json({ message: 'Test data stored successfully' });
 });
 
-// Endpoint to retrieve stored test data
 app.get('/retrieve-test-data/:testID', (req, res) => {
     const testID = req.params.testID;
 
@@ -296,7 +296,6 @@ app.get('/retrieve-test-data/:testID', (req, res) => {
     res.status(200).json(testDataStorage[testID]);
 });
 
-// Endpoint to save all test data to a JSON file
 app.post('/write-test-data-file', (req, res) => {
     // Read existing data from the file if it exists
     fs.readFile(filePath, 'utf8', (err, data) => {
