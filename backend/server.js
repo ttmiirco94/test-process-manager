@@ -91,8 +91,12 @@ function execTestAndRespond(testID, command, res, projectPath) {
         timestamp: new Date().toISOString()
     };
     let combinedOutput = '';
+    // Define your environment variables
+    const env = Object.assign({}, process.env, {
+        STARTED_FROM_API: 'true'
+    });
 
-    const child = exec(command, { cwd: projectPath});
+    const child = exec(command, { env, cwd: projectPath});
 
     child.stdout.on('data', (data) => {
         combinedOutput += data;
@@ -200,26 +204,40 @@ function waitForVariable(variableName, maxWaitingTime = 300000) {
 
 app.put('/selenium-test/:testID', (req, res) => {
     const testID = req.params.testID;
-    if (runningTests[testID]) {
-        return res.status(400).json({ error: 'Test ID already exists' });
+    if (runningTests[testID] && runningTests[testID].type === 'Selenium') {
+        delete runningTests[testID];
+        broadcastTests();
+        if (testDataStorage.hasOwnProperty(testID)) {
+            delete testDataStorage[testID];
+        }
+        //return res.status(400).json({ error: 'Test ID already exists' });
     }
-    //mvn -Dtest={testID} test
     //mvn -Dtest=TST-321#testMethod test
     execTestAndRespond(testID, `mvn -Dtest=${testID} test`, res, mavenProjectPath);
 });
 
 app.put('/playwright-test/:testID', (req, res) => {
     const testID = req.params.testID;
-    if (runningTests[testID]) {
-        return res.status(400).json({ error: 'Test ID already exists' });
+    if (runningTests[testID] && runningTests[testID].type === 'Playwright') {
+        delete runningTests[testID];
+        broadcastTests();
+        if (testDataStorage.hasOwnProperty(testID)) {
+            delete testDataStorage[testID];
+        }
+        //return res.status(400).json({ error: 'Test ID already exists' });
     }
     execTestAndRespond(testID, `npx playwright test --grep "\\b${testID}\\b"`, res, playwrightProjectPath);
 });
 
 app.put('/uft-test/:testID', (req, res) => {
     const testID = req.params.testID;
-    if (runningTests[testID]) {
-        return res.status(400).json({ error: 'Test ID already exists' });
+    if (runningTests[testID] && runningTests[testID].type === 'UFT') {
+        delete runningTests[testID];
+        broadcastTests();
+        if (testDataStorage.hasOwnProperty(testID)) {
+            delete testDataStorage[testID];
+        }
+        //return res.status(400).json({ error: 'Test ID already exists' });
     }
     execTestAndRespond(testID, `UFT.exe -run -test "${uftProjectPath}\\Tests\\${testID}" -result "${uftProjectPath}\\Results\\${testID}"`, res, uftProjectPath);
 });
@@ -236,6 +254,18 @@ app.post('/test-output/:testID', (req, res) => {
     res.sendStatus(200);
 });
 
+// Endpoint to check if a testID exists and return test results
+app.get('/test-results/:testID', (req, res) => {
+    const testID = req.params.testID;
+
+    // Check if testID exists in runningTests
+    if (!runningTests[testID]) {
+        return res.status(404).json({ error: 'Test ID not found' });
+    }
+
+    res.status(200).json(runningTests[testID]);
+});
+
 // Add a new POST endpoint to store test data
 app.post('/store-test-data/:testID', (req, res) => {
     const testID = req.params.testID;
@@ -245,16 +275,11 @@ app.post('/store-test-data/:testID', (req, res) => {
         return res.status(400).json({ error: 'No test data provided' });
     }
 
-    // Check if the testID exists in the runningTests object
-    if (!runningTests[testID]) {
-        return res.status(404).json({ error: 'Test ID not found' });
-    }
-
     // Store the test data in the testDataStorage object
     if (!testDataStorage[testID]) {
         testDataStorage[testID] = [];
     }
-    testDataStorage[testID].push({ data: testData, timestamp: new Date().toISOString() });
+    testDataStorage[testID] = { data: testData, timestamp: new Date().toISOString() };
 
     // Respond with a success message
     res.status(200).json({ message: 'Test data stored successfully' });
