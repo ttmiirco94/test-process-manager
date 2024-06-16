@@ -6,6 +6,7 @@ const cors = require('cors');
 const moment = require('moment-timezone');
 const basicAuth = require('express-basic-auth');
 const { exec } = require('child_process');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -28,6 +29,8 @@ const playwrightProjectPath = 'C:\\Users\\mirco\\Desktop\\test-process-manager\\
 
 let runningTests = {};
 let latestTestResults = {};
+let testDataStorage = {};
+const filePath = 'test-data/testDataStorage.json';
 
 function execTestAndRespondOld(testID, command, res, projectPath) {
     exec(command, { cwd: projectPath , stdio: 'pipe' }, (error, stdout, stderr) => {
@@ -231,6 +234,83 @@ app.post('/test-output/:testID', (req, res) => {
     runningTests[testID].output.push({ message: output, timestamp });
     broadcastTests();
     res.sendStatus(200);
+});
+
+// Add a new POST endpoint to store test data
+app.post('/store-test-data/:testID', (req, res) => {
+    const testID = req.params.testID;
+    const testData = req.body;
+
+    if (!testData || Object.keys(testData).length === 0) {
+        return res.status(400).json({ error: 'No test data provided' });
+    }
+
+    // Check if the testID exists in the runningTests object
+    if (!runningTests[testID]) {
+        return res.status(404).json({ error: 'Test ID not found' });
+    }
+
+    // Store the test data in the testDataStorage object
+    if (!testDataStorage[testID]) {
+        testDataStorage[testID] = [];
+    }
+    testDataStorage[testID].push({ data: testData, timestamp: new Date().toISOString() });
+
+    // Respond with a success message
+    res.status(200).json({ message: 'Test data stored successfully' });
+});
+
+// Endpoint to retrieve stored test data
+app.get('/retrieve-test-data/:testID', (req, res) => {
+    const testID = req.params.testID;
+
+    if (!testDataStorage[testID]) {
+        return res.status(404).json({ error: 'Test data not found for the given test ID' });
+    }
+
+    res.status(200).json(testDataStorage[testID]);
+});
+
+// Endpoint to save all test data to a JSON file
+app.post('/write-test-data-file', (req, res) => {
+    // Read existing data from the file if it exists
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        let existingData = {};
+
+        if (err && err.code !== 'ENOENT') {
+            console.error('Error reading file', err);
+            return res.status(500).json({ error: 'Failed to read test data file' });
+        }
+
+        if (!err) {
+            try {
+                existingData = JSON.parse(data);
+            } catch (parseErr) {
+                console.error('Error parsing existing data', parseErr);
+                return res.status(500).json({ error: 'Failed to parse existing test data' });
+            }
+        }
+
+        // Merge the new data with the existing data
+        for (const testID in testDataStorage) {
+            if (existingData[testID]) {
+                // If the testID already exists, update its data
+                existingData[testID] = existingData[testID].concat(testDataStorage[testID]);
+            } else {
+                // Otherwise, add the new testID and its data
+                existingData[testID] = testDataStorage[testID];
+            }
+        }
+
+        // Write the merged data back to the file
+        fs.writeFile(filePath, JSON.stringify(existingData, null, 2), (writeErr) => {
+            if (writeErr) {
+                console.error('Error writing to file', writeErr);
+                return res.status(500).json({ error: 'Failed to save test data' });
+            }
+            res.status(200).json({ message: 'Test data saved successfully', filePath });
+        });
+    });
 });
 
 app.delete('/test/:testID', (req, res) => {
