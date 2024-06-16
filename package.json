@@ -1,0 +1,30 @@
+{
+  "name": "test-process-manager",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "_comment1": "Single Installation Scripts if something breaks, bugs or won't work",
+    "_comment11": "------------------------------------------------------------------",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:dependencies:playwright": "cd test-frameworks/playwright-typescript-poc && npm install",
+    "install:dependencies:selenium": "cd test-frameworks/selenium-quickstarter-master && mvn install",
+    "install:test-frameworks": "concurrently \"npm run install:dependencies:playwright\" \"npm run install:dependencies:selenium\"",
+    "start:backend": "node backend/server.js",
+    "start:frontend": "cd frontend && cross-env NODE_OPTIONS=--openssl-legacy-provider npx react-scripts start",
+
+    "_comment2": "First Install all Dependencies for each involving project and then run start:all",
+    "_comment22": "-------------------------------------------------------------------------------",
+    "install:backend:frontend:test-frameworks": "concurrently \"npm run install:backend\" \"npm run install:frontend\" \"npm run install:dependencies:playwright\" \"npm run install:dependencies:selenium\"",
+    "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttmiirco94/test-process-manager.git"
+  },
+  "private": true,
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3"
+  }
+}
