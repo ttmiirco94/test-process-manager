@@ -1,5 +1,5 @@
 # Test Process Manager
-## Documentation automatically generated
+## Auto-generated Documentation (currently not up-to-date)
 
 ## Overview
 
