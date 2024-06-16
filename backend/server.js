@@ -174,7 +174,7 @@ function cleanUp(data) {
       // Trim leading and trailing spaces
     return data.output
         .replace(/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]/g, '')  // Remove ANSI escape codes
-        .replace(/[›@\\/:.<>\|]/g, '')  // Remove unwanted characters including ":", "<", ">", "|"
+        .replace(/[›@\\/:.<>|]/g, '')  // Remove unwanted characters including ":", "<", ">", "|"
         .replace(/["']/g, '')  // Remove quotes
         .replace(/(\r\n|\n|\r)/gm, ' ')  // Replace newlines with space
         .replace(/\s+/g, ' ')  // Replace multiple spaces with a single space
