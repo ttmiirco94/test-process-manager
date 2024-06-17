@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="Google Page Tests" verbose="1" parallel="tests">
-	<parameter name="browser" value="firefox"/>
+    <parameter name="browser" value="firefox"/>
 </suite>

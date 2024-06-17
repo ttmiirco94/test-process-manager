@@ -1,28 +1,36 @@
-import { expect, Locator, Page } from '@playwright/test'
+import {expect, Page} from '@playwright/test'
 
-import { BasePage } from './BasePage'
+import {BasePage} from './BasePage'
 
 export class LoginPage extends BasePage {
-  readonly errorMessage: Locator
-  readonly passwordInput: Locator
-  readonly submitButton: Locator
-  readonly usernameInput: Locator
 
-  constructor(page: Page) {
-    super(page)
-    this.errorMessage = page.locator('.alert-error')
-    this.passwordInput = page.locator('#user_password')
-    this.submitButton = page.locator('text=Sign in')
-    this.usernameInput = page.locator('#user_login')
-  }
+    constructor(page: Page) {
+        super(page)
+    }
 
-  async assertErrorMessage(errorMessage: string) {
-    await expect(this.errorMessage).toHaveText(errorMessage)
-  }
+    get errorMessage() {
+        return this.page.locator('.alert-error');
+    }
 
-  async login(username: string, password: string) {
-    await this.usernameInput.type(username)
-    await this.passwordInput.type(password)
-    await this.submitButton.click()
-  }
+    get passwordInput() {
+        return this.page.locator('#user_password');
+    }
+
+    get submitButton() {
+        return this.page.locator('text=Sign in');
+    }
+
+    get usernameInput() {
+        return this.page.locator('#user_login');
+    }
+
+    async assertErrorMessage(errorMessage: string) {
+        await expect(this.errorMessage).toHaveText(errorMessage)
+    }
+
+    async login(username: string, password: string) {
+        await this.usernameInput.fill(username)
+        await this.passwordInput.fill(password)
+        await this.submitButton.click()
+    }
 }

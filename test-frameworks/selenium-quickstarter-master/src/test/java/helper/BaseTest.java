@@ -10,7 +10,7 @@ public class BaseTest {
 
     protected WebDriver driver;
 
-    @Parameters({ "browser" })
+    @Parameters({"browser"})
     @BeforeMethod(alwaysRun = true)
     public void setUp(@Optional("firefox") String browser) {
         BrowserDriverFactory factory = new BrowserDriverFactory(browser);

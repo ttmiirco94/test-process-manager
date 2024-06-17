@@ -10,12 +10,14 @@ public class GooglePOM {
 
     public GooglePOM(WebDriver driver) {
         System.out.println("Initiate GooglePOM with curren WebDriver");
-        this.driver=driver;
+        this.driver = driver;
     }
+
     public void goToPage() {
         System.out.println("Go to page: " + url);
         driver.get(url);
     }
+
     public void verifyUrl() {
         assertEquals(driver.getCurrentUrl(), "https://www.google.de/");
     }

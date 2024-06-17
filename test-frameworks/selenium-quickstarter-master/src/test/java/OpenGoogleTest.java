@@ -3,6 +3,7 @@ import helper.JSONUtils;
 import helper.TestUtilities;
 import org.testng.annotations.Test;
 import pages.GooglePOM;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class OpenGoogleTest extends TestUtilities {
 
         String startedFromAPI = System.getenv("STARTED_FROM_API");
         System.out.println("Check if started from API call. Value: " + startedFromAPI);
-        if("true".equals(startedFromAPI)) {
+        if ("true".equals(startedFromAPI)) {
             // Create a map of key-value pairs
             Map<String, String> jsonMap = new HashMap<>();
             jsonMap.put("seleniumTest", "true");
