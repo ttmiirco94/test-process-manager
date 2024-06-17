@@ -2,4 +2,9 @@
 
 <suite name="Google Page Tests" verbose="1" parallel="tests">
     <parameter name="browser" value="firefox"/>
+    <test name="OpenGoogleTest">
+        <classes>
+            <class name="OpenGoogleTest"/>
+        </classes>
+    </test>
 </suite>

@@ -216,7 +216,8 @@ app.put('/selenium-test/:testID', (req, res) => {
         //return res.status(400).json({ error: 'Test ID already exists' });
     }
     //mvn -Dtest=TST-321#testMethod test
-    execTestAndRespond(testID, `mvn -Dtest=${testID} test`, res, mavenProjectPath);
+    //other way -DsuiteXmlFile=src/test/resources/testng1.xml
+    execTestAndRespond(testID, `mvn -DsuiteXmlFile=src/test/resources/${testID}.xml test`, res, mavenProjectPath);
 });
 
 app.put('/playwright-test/:testID', (req, res) => {

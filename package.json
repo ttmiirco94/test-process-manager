@@ -16,7 +16,7 @@
 
     "_comment2": "First Install all Dependencies for each involving project and then run start:all",
     "_comment22": "-------------------------------------------------------------------------------",
-    "install:backend:frontend:test-frameworks": "concurrently \"npm run install:backend\" \"npm run install:frontend\" \"npm run install:dependencies:playwright\" \"npm run install:dependencies:selenium\"",
+    "install:backend:frontend:test-frameworks": "npm install && concurrently \"npm run install:backend\" \"npm run install:frontend\" \"npm run install:dependencies:playwright\" \"npm run install:dependencies:selenium\"",
     "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
   },
   "repository": {
