@@ -3,21 +3,33 @@ import {Locator, Page} from '@playwright/test'
 import {BasePage} from '../BasePage'
 
 export class TopBarMenuLoggedInUserPage extends BasePage {
-    readonly accountSummaryTab: Locator
-    readonly accountActivityTab: Locator
-    readonly transferFundsTab: Locator
-    readonly payBillsTab: Locator
-    readonly myMoneyMapTab: Locator
-    readonly onlineStatementsTab: Locator
 
     constructor(page: Page) {
         super(page)
-        this.accountSummaryTab = page.locator('#account_summary_tab')
-        this.accountActivityTab = page.locator('#account_activity_tab')
-        this.transferFundsTab = page.locator('#transfer_funds_tab')
-        this.payBillsTab = page.locator('#pay_bills_tab')
-        this.myMoneyMapTab = page.locator('#pay_bills_tab')
-        this.onlineStatementsTab = page.locator('#pay_bills_tab')
+    }
+
+    get accountSummaryTab() {
+        return this.page.locator('#account_summary_tab');
+    }
+
+    get accountActivityTab() {
+        return this.page.locator('#account_activity_tab');
+    }
+
+    get transferFundsTab() {
+        return this.page.locator('#transfer_funds_tab');
+    }
+
+    get payBillsTab() {
+        return this.page.locator('#pay_bills_tab');
+    }
+
+    get myMoneyMapTab() {
+        return this.page.locator('#pay_bills_tab');
+    }
+
+    get onlineStatementsTab() {
+        return this.page.locator('#pay_bills_tab');
     }
 
     async clickTab(tabname: string) {
