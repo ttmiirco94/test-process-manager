@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "description": "aityPilot - TestFlowManager: is a full-stack application designed to control and start UI tests through a WebSocket-enabled API.",
   "scripts": {
+    "list-node-processes": "tasklist | findstr node.exe",
+    "kill-node-processes": "taskkill /F /IM node.exe",
     "_comment1": "Single Installation Scripts if something breaks, bugs or won't work",
     "_comment11": "------------------------------------------------------------------",
     "install:backend": "cd backend && npm install",
