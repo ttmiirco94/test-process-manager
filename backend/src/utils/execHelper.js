@@ -7,9 +7,9 @@ const fs = require("fs");
 
 const logger = createCustomLogger('execHelper.js');
 const baseDir = __dirname;
-const playwrightProjectPath = path.join(baseDir, '..', 'test-frameworks', 'playwright-typescript-poc');
-const mavenProjectPath = path.join(baseDir, '..', 'test-frameworks', 'selenium-quickstarter-master');
-const uftProjectPath = path.join(baseDir, '..', 'test-frameworks', '/path/to/your/uft/project');
+const playwrightProjectPath = path.join(baseDir, '..', '..', '..', 'test-frameworks', 'playwright-typescript-poc');
+const mavenProjectPath = path.join(baseDir, '..', '..', '..', 'test-frameworks', 'selenium-quickstarter-master');
+const uftProjectPath = path.join(baseDir, '..', '..', '..', 'test-frameworks', '/path/to/your/uft/project');
 
 let latestTestResults = {};
 let runningTests = {};
