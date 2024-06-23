@@ -202,6 +202,7 @@ function App() {
     return (
         <div className="App">
             <header className="header">
+                <img src="../Logo_fixed.png" alt="Logo" className="logo"/>
                 <img src="../public/Logo_fixed.png" alt="Logo" className="logo"/>
             </header>
             <header className="header">

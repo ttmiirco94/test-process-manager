@@ -15,3 +15,5 @@
 /test-frameworks/**/test-results
 /test-frameworks/**/playwright-report
 /test-frameworks/**/target
+combined.log
+error.log
