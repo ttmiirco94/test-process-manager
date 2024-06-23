@@ -18,7 +18,7 @@ public class HTTPSender {
     private final String baseUrl = "http://localhost:3001";
 
     public void sendTestDataToAPI(String testID, String jsonBody) {
-        String url = baseUrl + "/store-test-data/" + testID;
+        String url = baseUrl + "api/test/store/" + testID;
 
         // Set up the credentials provider
         CredentialsProvider credsProvider = new BasicCredentialsProvider();

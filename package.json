@@ -1,8 +1,8 @@
 {
-  "name": "test-process-manager",
+  "name": "aitypilot-testflowmanager",
   "author": "Mirco Recknagel",
   "version": "1.0.0",
-  "description": "Test Process Manager is a full-stack application designed to control and start UI tests through a WebSocket-enabled API.",
+  "description": "aityPilot - TestFlowManager: is a full-stack application designed to control and start UI tests through a WebSocket-enabled API.",
   "scripts": {
     "_comment1": "Single Installation Scripts if something breaks, bugs or won't work",
     "_comment11": "------------------------------------------------------------------",
