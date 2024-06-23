@@ -7,6 +7,9 @@
 /backend/combined.log
 /backend/error.log
 /backend/database.sqlite
+/backend/src/combined.log
+/backend/src/error.log
+/backend/src/database.sqlite
 /test-frameworks/**/.idea
 /test-frameworks/**/node_modules
 /test-frameworks/**/test-results

@@ -11,7 +11,7 @@
     "install:dependencies:playwright": "cd test-frameworks/playwright-typescript-poc && npm install",
     "install:dependencies:selenium": "cd test-frameworks/selenium-quickstarter-master && mvn install",
     "install:test-frameworks": "concurrently \"npm run install:dependencies:playwright\" \"npm run install:dependencies:selenium\"",
-    "start:backend": "node backend/server.js",
+    "start:backend": "node backend/src/server.js",
     "start:frontend": "cd frontend && cross-env NODE_OPTIONS=--openssl-legacy-provider npx react-scripts start",
 
     "_comment2": "First Install all Dependencies for each involving project and then run start:all",

@@ -1,14 +1,30 @@
-# Test Process Manager
+<p align="center">
+  <img src="\public\media\logos\Logo.png" alt="aityPilot" width="400" />
+</p>
+
+<h1 align="center" style="line-height:0%">aityPILOT</h1>
+<h1 align="center" style="line-height:0%">TestFlowManager</h1>
+<p align="center">
+  <a href="https://stackshare.io/[CreateAccountPutLinkHere]">
+    <img src="https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat" alt="StackShare" />
+  </a>
+</p>
+<p align="center">
+  <b>TestFlowManager is a full-stack application designed to control,start and share data between different TestAutomation tests through a WebSocket-enabled API.</b></br>
+  <span>The project consists of two main components: an Express Server API and a React Frontend. Written in Typescript & Javascript </span></br>
+  <sub>First Server, API and UI - made with the desire to learn by <a href="https://github.com/ttmiirco94">ttmiirco94</a>></sub>
+</p>
+<br/>
 
 ## Overview
 
 Test Process Manager is a full-stack application designed to control and start UI tests through a WebSocket-enabled API. The project consists of two main components: the backend API and the frontend UI.
 
 ### Endpoint Diagram
-![Alt text](api_overview.png "API Overview")
+![Alt text](\public\media\api_overview.png "API Overview")
 
 ### Sequence Example
-![Alt text](sequence_diagram.png "API Overview")
+![Alt text](\public\media\sequence_diagram.png "API Overview")
 
 ### Why? What for?
 

@@ -202,11 +202,13 @@ function App() {
     return (
         <div className="App">
             <header className="header">
-                <img src="/logo_400.png" alt="Logo" className="logo"/>
-                <h1>aityPilot - TestFlowManager</h1>
+                <img src="../public/Logo_fixed.png" alt="Logo" className="logo"/>
+            </header>
+            <header className="header">
+                <h2>aityPilot - TestFlowManager</h2>
                 <h3>by Mirco Recknagel</h3>
             </header>
-            {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon" />}
+            {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon"/>}
             <div className={`button-group ${isLoading ? 'disabled' : ''}`}>
                 <div className="test-actions">
                     <button className="test-command-button" onClick={() => !isLoading && setIsCommandModalOpen(true)}
@@ -264,10 +266,11 @@ function App() {
             <Modal isOpen={isStartModalOpen} onRequestClose={() => setIsStartModalOpen(false)} className="modal"
                    overlayClassName="overlay">
                 <h2>Start Test</h2>
-                {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon" />}
+                {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon"/>}
                 <div>
                     <label>Endpoint:</label>
-                    <select value={selectedEndpoint} onChange={(e) => setSelectedEndpoint(e.target.value)} disabled={isLoading}>
+                    <select value={selectedEndpoint} onChange={(e) => setSelectedEndpoint(e.target.value)}
+                            disabled={isLoading}>
                         <option value="selenium">Selenium</option>
                         <option value="playwright">Playwright</option>
                         <option value="uft">UFT</option>
@@ -275,18 +278,20 @@ function App() {
                 </div>
                 <div>
                     <label>Test ID:</label>
-                    <input type="text" value={testID} onChange={(e) => setTestID(e.target.value)} disabled={isLoading} />
+                    <input type="text" value={testID} onChange={(e) => setTestID(e.target.value)} disabled={isLoading}/>
                 </div>
                 <button onClick={startTest} disabled={isLoading}>Send Request</button>
                 <button onClick={() => setIsStartModalOpen(false)} disabled={isLoading}>Close</button>
             </Modal>
 
-            <Modal isOpen={isOutputModalOpen} onRequestClose={() => setIsOutputModalOpen(false)} className="modal" overlayClassName="overlay">
+            <Modal isOpen={isOutputModalOpen} onRequestClose={() => setIsOutputModalOpen(false)} className="modal"
+                   overlayClassName="overlay">
                 <h2>Send Output</h2>
-                {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon" />}
+                {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon"/>}
                 <div>
                     <label>Test ID:</label>
-                    <select value={selectedTestID} onChange={(e) => setSelectedTestID(e.target.value)} disabled={isLoading}>
+                    <select value={selectedTestID} onChange={(e) => setSelectedTestID(e.target.value)}
+                            disabled={isLoading}>
                         {Object.keys(tests).map(testID => (
                             <option key={testID} value={testID}>{testID}</option>
                         ))}
@@ -294,7 +299,7 @@ function App() {
                 </div>
                 <div>
                     <label>Output:</label>
-                    <textarea value={outputText} onChange={(e) => setOutputText(e.target.value)} disabled={isLoading} />
+                    <textarea value={outputText} onChange={(e) => setOutputText(e.target.value)} disabled={isLoading}/>
                 </div>
                 <button onClick={sendOutput} disabled={isLoading}>Send Output</button>
                 <button onClick={() => setIsOutputModalOpen(false)} disabled={isLoading}>Close</button>
@@ -303,7 +308,7 @@ function App() {
     );
 }
 
-function TestCard({ testID, type, output, index, deleteTest, isLoading }) {
+function TestCard({testID, type, output, index, deleteTest, isLoading}) {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const cardClass = index % 2 === 0 ? 'test-card darker' : 'test-card lighter';
     const lastStatus = output.map(o => o.message).reverse().find(message => message.includes("500:failed") || message.includes("200:success"));
