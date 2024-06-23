@@ -61,7 +61,7 @@ function App() {
     const [isOutputModalOpen, setIsOutputModalOpen] = useState(false);
     const [selectedEndpoint, setSelectedEndpoint] = useState('selenium');
     const [testID, setTestID] = useState('');
-    const [command, setCommand] = useState('');
+    const [cmdPrompt, setCmdPrompt] = useState('');
     const [outputText, setOutputText] = useState('');
     const [selectedTestID, setSelectedTestID] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -87,11 +87,14 @@ function App() {
         };
         return () => ws.close();
     }, []);
-
+    const logCommand = async () => {
+        await console.log(`testID: ${testID}, Command: ${cmdPrompt}, base64: ${btoa(cmdPrompt)}`);
+    }
     const testCommand = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:3001/api/tests/selenium/TEST123-${Buffer.from(command).toString('base64')}`, {
+            await console.log(`testID: ${testID}, Command: ${cmdPrompt}, base64: ${btoa(cmdPrompt)}`);
+            const response = await fetch(`http://localhost:3001/api/tests/selenium/TEST123-${btoa(cmdPrompt)}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': authHeader,
@@ -101,10 +104,10 @@ function App() {
                 const errorData = await response.json();
                 alert(`Error: ${errorData.error}`);
             } else {
-                setIsStartModalOpen(false);
+                setIsCommandModalOpen(false);
             }
         } catch (error) {
-            alert('An error occurred while starting the test. Error: ' + error);
+            alert('An error occurred while sending the Command to execute. Error: ' + error);
             console.warn(error);
         }
         setTimeout(() => setIsLoading(false), 5000);
@@ -257,9 +260,10 @@ function App() {
                 </div>
                 <div>
                     <label>CMD Prompt:</label>
-                    <input type="text" value={command} onChange={(e) => setCommand(e.target.value)}
+                    <input type="text" value={cmdPrompt} onChange={(e) => setCmdPrompt(e.target.value)}
                            disabled={isLoading}/>
                 </div>
+                <button onClick={logCommand} disabled={isLoading}>Log Values</button>
                 <button onClick={testCommand} disabled={isLoading}>Send Request</button>
                 <button onClick={() => setIsCommandModalOpen(false)} disabled={isLoading}>Close</button>
             </Modal>
