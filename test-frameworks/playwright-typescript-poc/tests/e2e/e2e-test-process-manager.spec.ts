@@ -5,7 +5,7 @@ import {TopBarMenuLoggedInUserPage} from '../../page-objects/components/TopBarMe
 
 const username = 'admin';
 const password = 'admin123!';
-const baseUrl = 'http://localhost:3001';
+const baseUrl = 'http://localhost:3001/api/tests';
 
 test('TST-123 | Example Playwright Test', async ({page}) => {
     let landingPage = new LandingPage(page)
