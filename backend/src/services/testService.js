@@ -11,8 +11,6 @@ const playwrightProjectPath = path.join(baseDir, '..', '..', '..', 'test-framewo
 const mavenProjectPath = path.join(baseDir, '..', '..', '..', 'test-frameworks', 'selenium-quickstarter-master');
 const uftProjectPath = path.join(baseDir, '..', '..', '..', 'test-frameworks', '/path/to/your/uft/project');
 
-let runningTests = {};
-
 exports.runTest = async (testID, type, res, wss) => {
     let projectPath;
     let command;
@@ -20,6 +18,7 @@ exports.runTest = async (testID, type, res, wss) => {
         case 'selenium':
             projectPath = mavenProjectPath;
             command = `mvn -Dtest=${testID} test`;
+            //command = `mvn -DsuiteXmlFile=src/test/resources/TestSuites/${testID}.xml test`
             break;
         case 'playwright':
             projectPath = playwrightProjectPath;
@@ -56,15 +55,20 @@ exports.runTest = async (testID, type, res, wss) => {
 
 exports.getTestResults = async (testID, res) => {
     try {
-        const test = await Test.findByPk(testID, { include: TestOutput });
+        const test = await Test.findByPk(testID, {
+            include: {
+                model: TestOutput,
+                as: 'TestOutputs'
+            }
+        });
         if (!test) {
             logger.error('Test results not found for ID: %s', testID);
-            return res.status(404).json({ error: 'Test ID not found' });
+            return res.status(404).json({ error: 'Test results not found for the given test ID' });
         }
         logger.info('Returning test results for ID: %s', testID);
         res.status(200).json(test);
     } catch (error) {
-        logger.error('Error fetching test results for ID: %s - %s', testID, error.message);
+        logger.error('Error retrieving test results for ID: %s - %s', testID, error.message);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
@@ -91,9 +95,14 @@ exports.storeTestData = async (testID, testData, res) => {
     }
 };
 
-exports.retrieveTestData = async (testID, res) => {
+exports.getTestData = async (testID, res) => {
     try {
-        const test = await Test.findByPk(testID, { include: TestOutput });
+        const test = await Test.findByPk(testID, {
+            include: {
+                model: TestOutput,
+                as: 'TestOutputs'
+            }
+        });
         if (!test) {
             logger.error('Test data not found for ID: %s', testID);
             return res.status(404).json({ error: 'Test data not found for the given test ID' });
@@ -115,9 +124,7 @@ exports.deleteTest = async (testID, res, wss) => {
     try {
         const test = await Test.findByPk(testID);
         if (test) {
-            logger.info('Deleting test with ID: %s', testID);
             await test.destroy();
-            await broadcastTests(wss);
             res.sendStatus(200);
         } else {
             logger.error('Test not found with ID: %s', testID);
@@ -125,20 +132,18 @@ exports.deleteTest = async (testID, res, wss) => {
         }
     } catch (error) {
         logger.error('Error deleting test with ID: %s - %s', testID, error.message);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: `Error while deleting test with ID: ${testID}` });
     }
+    await broadcastTests(wss);
 };
 
 exports.deleteAllTests = async (res, wss) => {
     try {
-        await TestOutput.destroy({ where: {} });
         await Test.destroy({ where: {} });
-        runningTests = {};
-        logger.info('Deleted all tests, sending response');
         res.sendStatus(200);
-        setTimeout(() => broadcastTests(wss), 250);
     } catch (error) {
         logger.error('Error deleting all tests - %s', error.message);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: `Error while deleting all tests` });
     }
+    await broadcastTests(wss)
 };

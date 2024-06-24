@@ -17,7 +17,7 @@ exports.getTestsAndOutputs = async () => {
         });
 
         if (tests.length === 0) {
-            console.log('No tests found.');
+            logger.info('No tests found.');
             return {};
         }
 
@@ -34,6 +34,22 @@ exports.getTestsAndOutputs = async () => {
         return results;
     } catch (error) {
         logger.error('Error fetching test results:', error);
+        throw error;
+    }
+};
+
+exports.findAndUpdateTestByTestID = async (testID, updatedData) => {
+    try {
+         const test = await Test.findByPk(testID);
+        if (!test) {
+            logger.info(`Test with ID ${testID} not found`);
+            return;
+        }
+        logger.info(`Updating test ${testID} with new values: ${JSON.stringify(updatedData)}`);
+        await test.update(updatedData);
+        await test.save();
+    } catch (error) {
+        logger.error(`Error updating test: ${testID}`, error);
         throw error;
     }
 };

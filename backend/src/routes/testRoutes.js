@@ -15,8 +15,7 @@ router.put('/uft/:testID', (req, res) => {
 router.get('/results/:testID', testController.getTestResults);
 
 router.post('/store/:testID', testController.storeTestData);
-router.get('/retrieve/:testID', testController.retrieveTestData);
-router.post('/write-data-file', testController.writeTestDataFile);
+router.get('/test-data/:testID', testController.getTestData);
 
 router.delete('/:testID', (req, res) => {
     testController.deleteTest(req, res, req.app.get('wss'));

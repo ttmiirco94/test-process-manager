@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import './App.css';
 import ReactToPrint from 'react-to-print';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faTimesCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faCheckCircle, faTimesCircle, faSpinner} from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import ReturnSafeTextComponent from './components/ReturnSafeTextComponent'; // Import the component
 import ReturnSafeLogoComponent from "./components/ReturnSafeLogoComponent";
@@ -15,9 +15,7 @@ const authHeader = `Basic ${btoa(`${username}:${password}`)}`;
 
 function formatDate(isoString) {
     const date = new Date(isoString);
-
     const pad = (number) => number.toString().padStart(2, '0');
-
     const day = pad(date.getUTCDate());
     const month = pad(date.getUTCMonth() + 1); // Months are zero-indexed
     const year = date.getUTCFullYear();
@@ -32,15 +30,18 @@ function App() {
     const [tests, setTests] = useState(''); // Set initial state with example data
     const [isCommandModalOpen, setIsCommandModalOpen] = useState(false);
     const [isStartModalOpen, setIsStartModalOpen] = useState(false);
+    const [isGetDataModalOpen, setIsGetDataModalOpen] = useState(false);
     const [isOutputModalOpen, setIsOutputModalOpen] = useState(false);
     const [selectedEndpoint, setSelectedEndpoint] = useState('selenium');
     const [testID, setTestID] = useState('');
+    const [testDataID, setTestDataID] = useState('');
     const [cmdPrompt, setCmdPrompt] = useState('');
     const [outputText, setOutputText] = useState('');
     const [selectedTestID, setSelectedTestID] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('Test Output'); // State for active tab
     const componentRef = useRef();
+    const componentRef2 = useRef();
 
     useEffect(() => {
         const ws = new WebSocket('ws://localhost:3001');
@@ -54,14 +55,12 @@ function App() {
             //setTests(data);
         };
         ws.onopen = (openMessage) => {
-            while(isLoading === true) {
-                setTimeout(() => null, 100);
-            }
+            setTimeout(() => null, 100);
             console.log('Received ws.onOpen trigger: ', openMessage.data);
             //setTests(data);
         };
         return () => ws.close();
-    });
+    }, []);
     const logCommand = async () => {
         await console.log(`testID: ${testID}, Command: ${cmdPrompt}, base64: ${btoa(cmdPrompt)}`);
     }
@@ -110,6 +109,28 @@ function App() {
         setTimeout(() => setIsLoading(false), 5000);
     };
 
+    const getTestData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`http://localhost:3001/api/tests/retrieve/${testDataID}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': authHeader,
+                },
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error}`);
+            } else {
+                setIsGetDataModalOpen(false);
+                setTestDataID('');
+            }
+        } catch (error) {
+            alert('An error occurred while getting test-data.');
+        }
+        setTimeout(() => setIsLoading(false), 5000);
+    };
+
     const sendOutput = async () => {
         setIsLoading(true);
         try {
@@ -119,7 +140,7 @@ function App() {
                     'Content-Type': 'application/json',
                     'Authorization': authHeader,
                 },
-                body: JSON.stringify({ output: outputText }),
+                body: JSON.stringify({output: outputText}),
             });
             if (!response.ok) {
                 const errorData = await response.json();
@@ -144,7 +165,7 @@ function App() {
         });
         if (response.ok) {
             setTests(prevTests => {
-                const newTests = { ...prevTests };
+                const newTests = {...prevTests};
                 delete newTests[testID];
                 return newTests;
             });
@@ -246,19 +267,33 @@ function App() {
                 </>
             )}
             {activeTab === 'Test-Data Store' && (
-                <div ref={componentRef} className="test-container">
-                    {Object.keys(tests).map((testID, index) => (
-                        <TestCard
-                            key={testID}
-                            testID={testID}
-                            type={tests[testID].type}
-                            output={tests[testID].output}
-                            index={index}
-                            deleteTest={deleteTest}
-                            isLoading={isLoading}
-                        />
-                    ))}
-                </div>
+                <>
+                    <div className={`button-group ${isLoading ? 'disabled' : ''}`}>
+                        <div className="test-actions">
+                            <button className="get-test-data-button"
+                                    onClick={getTestData}
+                                    disabled={isLoading}>Get Test-Data
+                            </button>
+                        </div>
+                        <div className="delete-all">
+                            <button className="delete-all-button" onClick={deleteAll} disabled={isLoading}>Delete All
+                            </button>
+                        </div>
+                    </div>
+                    <div ref={componentRef2} className="test-container">
+                        {Object.keys(tests).map((testDataID, index) => (
+                            <TestDataCard
+                                key={testID}
+                                testDataID={testID}
+                                type={tests[testID].type}
+                                testDataOutput={tests[testID].testDataOutput}
+                                index={index}
+                                deleteTest={deleteTest}
+                                isLoading={isLoading}
+                            />
+                        ))}
+                    </div>
+                </>
             )}
 
             <Modal isOpen={isCommandModalOpen} onRequestClose={() => setIsCommandModalOpen(false)} className="modal"
@@ -346,6 +381,30 @@ function TestCard({testID, type, output, index, deleteTest, isLoading}) {
             {!isCollapsed && (
                 <div className="output">
                     {output.map((entry, i) => (
+                        <div key={i} className="output-entry">
+                            <span className="timestamp">{formatDate(entry.timestamp)}</span> <ReturnSafeTextComponent text={entry.message} />
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function TestDataCard({testDataID, type, testDataOutput, index, deleteTest, isLoading}) {
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const cardClass = index % 2 === 0 ? 'test-card darker' : 'test-card lighter';
+
+    return (
+        <div className={cardClass}>
+            <h3>{`Test (${testDataID}) - ${type.toUpperCase()} Endpoint`}</h3>
+            <button onClick={() => !isLoading && deleteTest(testDataID)} className="delete-button" disabled={isLoading}>Delete</button>
+            <button onClick={() => setIsCollapsed(!isCollapsed)} className="toggle-button" disabled={isLoading}>
+                {isCollapsed ? 'Expand' : 'Collapse'}
+            </button>
+            {!isCollapsed && (
+                <div className="output">
+                    {testDataOutput.map((entry, i) => (
                         <div key={i} className="output-entry">
                             <span className="timestamp">{formatDate(entry.timestamp)}</span> <ReturnSafeTextComponent text={entry.message} />
                         </div>

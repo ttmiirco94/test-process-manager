@@ -3,6 +3,7 @@ const {broadcastTests} = require('./websocketHelper');
 const createCustomLogger = require('../config/logger');
 const path = require("path");
 const TestOutput = require("../models/TestOutput");
+const {findAndUpdateTestByTestID} = require("./databaseHelper");
 
 const logger = createCustomLogger('execHelper.js');
 const baseDir = __dirname;
@@ -71,8 +72,10 @@ exports.execTestAndRespond = async (testID, command, res, projectPath, wss) => {
             logger.error('Error saving TestOutputs in database for ID %s: %s', testID, err.message);
         }
 
+        await findAndUpdateTestByTestID(testID, {result: (result.success = code === 0)});
+
         res.sendStatus(result.success ? 200 : 500);
-        setTimeout(() => broadcastTests(wss), 250);
+        await broadcastTests(wss);
     });
 };
 

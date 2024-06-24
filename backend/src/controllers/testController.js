@@ -21,10 +21,10 @@ exports.runUFTTest = (req, res, wss) => {
     testService.runTest(testID, 'uft', res, wss);
 };
 
-exports.getTestResults = (req, res) => {
+exports.getTestResults = async (req, res) => {
     const testID = req.params.testID;
     logger.info('Retrieving test results for ID: %s', testID);
-    testService.getTestResults(testID, res);
+    await testService.getTestResults(testID, res);
 };
 
 exports.storeTestData = (req, res) => {
@@ -34,24 +34,19 @@ exports.storeTestData = (req, res) => {
     testService.storeTestData(testID, testData, res);
 };
 
-exports.retrieveTestData = (req, res) => {
+exports.getTestData = async (req, res) => {
     const testID = req.params.testID;
     logger.info('Retrieving test data for ID: %s', testID);
-    testService.retrieveTestData(testID, res);
+    await testService.getTestData(testID, res);
 };
 
-exports.writeTestDataFile = (req, res) => {
-    logger.info('Writing test data to file');
-    testService.writeTestDataFile(res);
-};
-
-exports.deleteTest = (req, res, wss) => {
+exports.deleteTest = async (req, res, wss) => {
     const testID = req.params.testID;
     logger.info('Deleting test with ID: %s', testID);
-    testService.deleteTest(testID, res, wss);
+    await testService.deleteTest(testID, res, wss);
 };
 
-exports.deleteAllTests = (req, res, wss) => {
+exports.deleteAllTests = async (req, res, wss) => {
     logger.info('Deleting all tests');
-    testService.deleteAllTests(res, wss);
+    await testService.deleteAllTests(res, wss);
 };
