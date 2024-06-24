@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import ReturnSafeTextComponent from './components/ReturnSafeTextComponent'; // Import the component
+import ReturnSafeLogoComponent from "./components/ReturnSafeLogoComponent";
 
 Modal.setAppElement('#root');
 
@@ -12,47 +13,20 @@ const username = 'admin';
 const password = 'admin123!';
 const authHeader = `Basic ${btoa(`${username}:${password}`)}`;
 
-const exampleTests = {
-    'test1': {
-        type: 'selenium',
-        output: [
-            { timestamp: 1625014800000, message: '200:success - Test completed successfully<br>Next line' },
-            { timestamp: 1625014900000, message: 'Info: Checking page elements\nAnother line\r\nYet another line' },
-            { timestamp: 1625015000000, message: 'Info: Page loaded correctly' },
-        ]
-    },
-    'test2': {
-        type: 'playwright',
-        output: [
-            { timestamp: 1625015100000, message: '500:failed - Test failed at step 3<br>Failure details' },
-            { timestamp: 1625015200000, message: 'Error: Element not found\nAdditional error info' },
-        ]
-    },
-};
+function formatDate(isoString) {
+    const date = new Date(isoString);
 
-function getDateTime(timestamp) {
-    const date = new Date(timestamp);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+    const pad = (number) => number.toString().padStart(2, '0');
 
-    return (`${day}.${month}.${year}\r\n${hours}:${minutes}:${seconds}:${milliseconds}`);
+    const day = pad(date.getUTCDate());
+    const month = pad(date.getUTCMonth() + 1); // Months are zero-indexed
+    const year = date.getUTCFullYear();
+    const hours = pad(date.getUTCHours());
+    const minutes = pad(date.getUTCMinutes());
+    const seconds = pad(date.getUTCSeconds());
+
+    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
 }
-
-function formatExampleTests(exampleTests) {
-    for (const test of Object.values(exampleTests)) {
-        for (const entry of test.output) {
-            entry.timestamp = getDateTime(entry.timestamp);
-        }
-    }
-    return exampleTests;
-}
-
-const formattedExampleTests = formatExampleTests(exampleTests);
 
 function App() {
     const [tests, setTests] = useState(''); // Set initial state with example data
@@ -86,7 +60,7 @@ function App() {
             //setTests(data);
         };
         return () => ws.close();
-    }, []);
+    });
     const logCommand = async () => {
         await console.log(`testID: ${testID}, Command: ${cmdPrompt}, base64: ${btoa(cmdPrompt)}`);
     }
@@ -205,8 +179,7 @@ function App() {
     return (
         <div className="App">
             <header className="header">
-                <img src="../Logo_fixed.png" alt="Logo" className="logo"/>
-                <img src="../public/Logo_fixed.png" alt="Logo" className="logo"/>
+                <ReturnSafeLogoComponent/>
             </header>
             <header className="header">
                 <h2>aityPilot - TestFlowManager</h2>
@@ -335,7 +308,7 @@ function TestCard({testID, type, output, index, deleteTest, isLoading}) {
                 <div className="output">
                     {output.map((entry, i) => (
                         <div key={i} className="output-entry">
-                            <span className="timestamp">{entry.timestamp}:</span> <ReturnSafeTextComponent text={entry.message}/>
+                            <span className="timestamp">{formatDate(entry.timestamp)}</span> <ReturnSafeTextComponent text={entry.message}/>
                         </div>
                     ))}
                 </div>

@@ -1,4 +1,7 @@
 const { createLogger, format, transports } = require('winston');
+const path = require("path");
+
+const logDir = path.join(__dirname, '..', '..');
 
 const logger = createLogger({
     level: 'info',
@@ -10,8 +13,8 @@ const logger = createLogger({
     ),
     defaultMeta: { service: 'general' },
     transports: [
-        new transports.File({ filename: 'error.log', level: 'error' }),
-        new transports.File({ filename: 'combined.log' }),
+        new transports.File({ dirname: logDir,filename: 'error.log', level: 'error' }),
+        new transports.File({ dirname: logDir, filename: 'combined.log' }),
     ],
 });
 
@@ -39,8 +42,8 @@ const createCustomLogger = (serviceName) => {
         ),
         defaultMeta: { from: serviceName/*, customParam: customParam*/ },
         transports: [
-            new transports.File({ filename: 'error.log', level: 'error' }),
-            new transports.File({ filename: 'combined.log' }),
+            new transports.File({ dirname: logDir, filename: 'error.log', level: 'error' }),
+            new transports.File({ dirname: logDir, filename: 'combined.log' }),
         ],
     });
 

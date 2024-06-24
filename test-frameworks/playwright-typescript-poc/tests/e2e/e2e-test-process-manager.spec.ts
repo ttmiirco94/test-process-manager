@@ -28,7 +28,7 @@ test('TST-123 | Example Playwright Test', async ({page}) => {
 
 test('GetSeleniumTestData | Read Stored Test Data from Selenium Test', async ({}) => {
     //Just for testing retrieve-test-data\:testID endpoint
-    await retrieveTestData('OpenGoogleTest');
+    //await retrieveTestData('OpenGoogleTest');
 })
 
 //We need a grep-able word/ID (currently: has to be unique in project) in testName
@@ -47,7 +47,7 @@ test('SeleniumPlusPlaywright | 1. Do Stuff in Playwright 2. Execute Selenium Tes
 
 //Outsourced code to keep the overview clean for demo presentation
 async function startSeleniumTest(testID: string) {
-    const endpoint = '/selenium-test/' + testID;
+    const endpoint = '/selenium/' + testID;
     const url = baseUrl + endpoint;
 
     const base64Credentials = Buffer.from(`${username}:${password}`).toString('base64');

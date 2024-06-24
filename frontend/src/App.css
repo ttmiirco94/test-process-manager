@@ -125,7 +125,7 @@ h1 {
     color: #888;
     font-size: 0.9em;
     display: inline-block;
-    width: 75px; /* Adjust width to match the timestamp column width */
+    width: 100px; /* Adjust width to match the timestamp column width */
     flex-shrink: 0; /* Prevent shrinking */
 }
 
@@ -140,6 +140,7 @@ h1 {
     margin-left: 160px; /* Match the width of the timestamp column */
     text-indent: -160px; /* Negative indent to align text correctly */
     padding-left: -75px; /* Ensure the new line starts at the correct position */
+    margin-bottom: -10px;
 }
 
 .delete-button,

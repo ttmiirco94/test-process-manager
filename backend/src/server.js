@@ -24,6 +24,10 @@ app.set('wss', wss);
 
 initializeWebSocket(wss);
 
+process.on('unhandledRejection', (reason, promise) => {
+    logger.error('Unhandled Rejection at: ' + promise + ' reason: ' + reason instanceof Error ? reason.message : reason);
+});
+
 sequelize.sync({ force: true }).then(() => {
     logger.info('Database synced');
     server.listen(3001, () => {

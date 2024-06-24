@@ -23,7 +23,7 @@ exports.runTest = async (testID, type, res, wss) => {
             break;
         case 'playwright':
             projectPath = playwrightProjectPath;
-            command = `npx playwright test --grep "\\\\b${testID}\\\\b"`;
+            command = `npx playwright test --grep "${testID}"`;
             break;
         case 'uft':
             projectPath = uftProjectPath;
@@ -37,18 +37,21 @@ exports.runTest = async (testID, type, res, wss) => {
         logger.info(`Command decoded: ${command}`);
     }
 
-    if (runningTests[testID] && runningTests[testID].type === type) {
-        logger.warn('Test with ID %s is already running. Deleting the existing one.', testID);
-        delete runningTests[testID];
-        broadcastTests(wss);
-    }
-
     logger.info('Executing test with ID %s using %s framework', testID, type);
 
-    // Save initial test entry
-    await Test.create({ testID, type });
+    try {
+        const test = await Test.findByPk(testID);
+        if (test) {
+            logger.warn('Test with ID %s already exists. Deleting the existing one.', testID);
+            await test.destroy();
+        }
+    } catch (error) {
+        logger.error(`Error deleting test with ID %s - %s`, testID, error.message);
+    }
 
-    execTestAndRespond(testID, command, res, projectPath, wss);
+    await Test.create({ testID, type });
+    setTimeout(() => broadcastTests(wss), 250);
+    await execTestAndRespond(testID, command, res, projectPath, wss);
 };
 
 exports.getTestResults = async (testID, res) => {
@@ -112,10 +115,9 @@ exports.deleteTest = async (testID, res, wss) => {
     try {
         const test = await Test.findByPk(testID);
         if (test) {
-            await test.destroy();
-            delete runningTests[testID];
-            broadcastTests(wss);
             logger.info('Deleting test with ID: %s', testID);
+            await test.destroy();
+            await broadcastTests(wss);
             res.sendStatus(200);
         } else {
             logger.error('Test not found with ID: %s', testID);

@@ -21,12 +21,12 @@ const TestOutput = sequelize.define('TestOutput', {
         defaultValue: DataTypes.NOW
     },
     message: {
-        type: DataTypes.TEXT,
-        allowNull: false
+        type: DataTypes.STRING,
+        allowNull: true
     }
 });
 
-Test.hasMany(TestOutput, { foreignKey: 'testID' });
-TestOutput.belongsTo(Test, { foreignKey: 'testID' });
+Test.hasMany(TestOutput, { foreignKey: 'testID', as: 'TestOutputs', onDelete: 'CASCADE' });
+TestOutput.belongsTo(Test, { foreignKey: 'testID', as: 'Test' });
 
 module.exports = TestOutput;
