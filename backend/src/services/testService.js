@@ -1,6 +1,8 @@
 const path = require('path');
 const Test = require('../models/Test');
 const TestOutput = require('../models/TestOutput');
+const TestData = require('../models/TestData');
+const TestDataOutput = require('../models/TestDataOutput');
 const { execTestAndRespond } = require('../utils/execHelper');
 const { broadcastTests } = require('../utils/websocketHelper');
 const createCustomLogger = require('../config/logger');
@@ -11,6 +13,13 @@ const playwrightProjectPath = path.join(baseDir, '..', '..', '..', 'test-framewo
 const mavenProjectPath = path.join(baseDir, '..', '..', '..', 'test-frameworks', 'selenium-quickstarter-master');
 const uftProjectPath = path.join(baseDir, '..', '..', '..', 'test-frameworks', '/path/to/your/uft/project');
 
+//TODO: Outsource regular used db-functions to databaseHelper.js
+
+//---------------------------------------------------------------------
+// FOR /TESTS/
+//---------------------------------------------------------------------
+
+//IMPLEMENTED
 exports.runTest = async (testID, type, res, wss) => {
     let projectPath;
     let command;
@@ -30,12 +39,6 @@ exports.runTest = async (testID, type, res, wss) => {
             break;
     }
 
-    if(testID.includes('TEST123-')) {
-        logger.info(`Admin Command Test: ${testID}`);
-        command = Buffer.from(testID.replace('TEST123-', ''), 'base64').toString('utf-8');
-        logger.info(`Command decoded: ${command}`);
-    }
-
     logger.info('Executing test with ID %s using %s framework', testID, type);
 
     try {
@@ -53,6 +56,7 @@ exports.runTest = async (testID, type, res, wss) => {
     await execTestAndRespond(testID, command, res, projectPath, wss);
 };
 
+//IMPLEMENTED
 exports.getTestResults = async (testID, res) => {
     try {
         const test = await Test.findByPk(testID, {
@@ -73,53 +77,7 @@ exports.getTestResults = async (testID, res) => {
     }
 };
 
-exports.storeTestData = async (testID, testData, res) => {
-    try {
-        const test = await Test.findByPk(testID);
-        if (!test) {
-            logger.error('Test ID not found: %s', testID);
-            return res.status(404).json({ error: 'Test ID not found' });
-        }
-        for (const data of testData) {
-            await TestOutput.create({
-                testID,
-                timestamp: data.timestamp,
-                message: data.message
-            });
-        }
-        logger.info('Test data stored successfully for ID: %s', testID);
-        res.status(200).json({ message: 'Test data stored successfully' });
-    } catch (error) {
-        logger.error('Error storing test data for ID: %s - %s', testID, error.message);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-
-exports.getTestData = async (testID, res) => {
-    try {
-        const test = await Test.findByPk(testID, {
-            include: {
-                model: TestOutput,
-                as: 'TestOutputs'
-            }
-        });
-        if (!test) {
-            logger.error('Test data not found for ID: %s', testID);
-            return res.status(404).json({ error: 'Test data not found for the given test ID' });
-        }
-        logger.info('Returning test data for ID: %s', testID);
-        res.status(200).json(test);
-    } catch (error) {
-        logger.error('Error retrieving test data for ID: %s - %s', testID, error.message);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-
-exports.writeTestDataFile = async (res) => {
-    // You can implement this function to write test data to a file from the database
-    logger.info('Writing test data to file');
-};
-
+//IMPLEMENTED
 exports.deleteTest = async (testID, res, wss) => {
     try {
         const test = await Test.findByPk(testID);
@@ -137,6 +95,7 @@ exports.deleteTest = async (testID, res, wss) => {
     await broadcastTests(wss);
 };
 
+//IMPLEMENTED
 exports.deleteAllTests = async (res, wss) => {
     try {
         await Test.destroy({ where: {} });
@@ -146,4 +105,70 @@ exports.deleteAllTests = async (res, wss) => {
         res.status(500).json({ error: `Error while deleting all tests` });
     }
     await broadcastTests(wss)
+};
+
+//---------------------------------------------------------------------
+// FOR /TEST-DATA/
+//---------------------------------------------------------------------
+
+//NEED TESTING
+exports.getTestData = async (testDataID, res) => {
+    try {
+        const testData = await Test.findByPk(testDataID, {
+            include: {
+                model: TestDataOutput,
+                as: 'TestDataOutputs'
+            }
+        });
+        if (!testData) {
+            logger.error('Test data not found for ID: %s', testDataID);
+            return res.status(404).json({ error: 'No TestData found for testDataID: %s', testDataID });
+        }
+        logger.info('Returning TestData for ID: %s', testDataID);
+        res.status(200).json(testData);
+    } catch (error) {
+        logger.error('Error retrieving test data for ID: %s - %s', testDataID, error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+//NEED TESTING
+exports.storeTestData = async (testDataID, testData, res) => {
+    try {
+        const testData = await Test.findByPk(testDataID);
+        if (!testData) {
+            logger.error('Test ID not found: %s', testDataID);
+            return res.status(404).json({ error: 'Test ID not found' });
+        }
+        for (const data of testData) {
+            await TestOutput.create({
+                testData,
+                timestamp: data.timestamp,
+                message: data.message
+            });
+        }
+        logger.info('Test data stored successfully for ID: %s', testDataID);
+        res.status(200).json({ message: 'Test data stored successfully' });
+    } catch (error) {
+        logger.error('Error storing test data for ID: %s - %s', testDataID, error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+//NEED TESTING
+exports.deleteTestData = async (testDataID, res, wss) => {
+    try {
+        const testData = await TestData.findByPk(testDataID);
+        if (testData) {
+            await testData.destroy();
+            res.sendStatus(200);
+        } else {
+            logger.error('TestData not found with ID: %s', testDataID);
+            res.sendStatus(404);
+        }
+    } catch (error) {
+        logger.error('Error deleting TestData with ID: %s - %s', testDataID, error.message);
+        res.status(500).json({ error: `Error while deleting TestData with ID: ${testDataID}` });
+    }
+    await broadcastTests(wss);
 };

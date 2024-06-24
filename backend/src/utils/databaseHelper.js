@@ -53,3 +53,42 @@ exports.findAndUpdateTestByTestID = async (testID, updatedData) => {
         throw error;
     }
 };
+
+exports.findAndDeleteTestByTestID = async (testID) => {
+    try {
+        const test = await Test.findByPk(testID);
+        if (!test) {
+            logger.info(`Test with ID ${testID} not found`);
+            return;
+        }
+        logger.info(`Deleting test ${testID}`);
+        await test.destroy();
+        await test.save();
+    } catch (error) {
+        logger.error(`Error deleting test: ${testID}`, error);
+        throw error;
+    }
+};
+
+exports.deleteAllTests = async () => {
+    try {
+        const tests = await Test.findAll({ where: {} });
+        if (!tests) {
+            logger.warn(`Currently no tests in database`);
+            return;
+        }
+        logger.info(`Deleting all tests`);
+        await Test.destroy({ where: {} });
+    } catch (error) {
+        logger.error(`Error deleting all tests`, error);
+        throw error;
+    }
+};
+
+//TODO: Outsource getTestData here
+
+//TODO: Outsource findAndUpdateTestDataByID here
+
+//TODO: Outsource deleteTestData here
+
+//TODO: Outsource deleteAllTestData here

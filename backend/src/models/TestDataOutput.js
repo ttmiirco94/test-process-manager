@@ -20,7 +20,7 @@ const TestDataOutput = sequelize.define('TestDataOutput', {
         allowNull: true,
         defaultValue: DataTypes.NOW
     },
-    message: {
+    data: {
         type: DataTypes.STRING,
         allowNull: true
     }

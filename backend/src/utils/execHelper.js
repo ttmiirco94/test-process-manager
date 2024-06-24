@@ -34,8 +34,13 @@ exports.execTestAndRespond = async (testID, command, res, projectPath, wss) => {
     });
 
     await child.on('close', async (code) => {
-        logger.info(`Child process exited with code ${code}`);
-        logger.info(`Combined output: ${combinedOutput}`);
+        if(code !== 0) {
+            logger.error(`Child process exited with code ${code}`);
+        } else if(code === 0) {
+            logger.info(`Child process exited with code ${code}`);
+        }
+        logger.info(`Full CommandLineTool output:`);
+        logger.info(`${combinedOutput}`);
         result.message = Buffer.from(combinedOutput.trim()).toString('base64');
         result.success = code === 0;
 
@@ -73,19 +78,7 @@ exports.execTestAndRespond = async (testID, command, res, projectPath, wss) => {
         }
 
         await findAndUpdateTestByTestID(testID, {result: (result.success = code === 0)});
-
         res.sendStatus(result.success ? 200 : 500);
         await broadcastTests(wss);
     });
 };
-
-function curlTestResults(testID, jsonData) {
-    const command = `curl -u admin:admin123! -X POST http://localhost:3001/api/tests/store/${testID} -H "Content-Type: application/json" -d ${JSON.stringify(jsonData)}`;
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            logger.error('Curl command failed for test ID %s: %s', testID, error.message);
-        } else {
-            logger.info('Curl command succeeded for test ID %s: %s', testID, stdout);
-        }
-    });
-}

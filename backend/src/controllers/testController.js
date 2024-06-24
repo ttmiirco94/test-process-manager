@@ -3,41 +3,34 @@ const createCustomLogger = require('../config/logger');
 
 const logger = createCustomLogger('testController.js');
 
-exports.runSeleniumTest = (req, res, wss) => {
+//---------------------------------------------------------------------
+// FOR /TESTS/
+//---------------------------------------------------------------------
+
+exports.runSeleniumTest = async (req, res, wss) => {
     const testID = req.params.testID;
-    logger.info('Running Selenium test with ID: %s', testID);
-    testService.runTest(testID, 'selenium', res, wss);
+    logger.info('Starting Selenium test with ID: %s', testID);
+    await testService.runTest(testID, 'selenium', res, wss);
 };
 
-exports.runPlaywrightTest = (req, res, wss) => {
+exports.runPlaywrightTest = async (req, res, wss) => {
     const testID = req.params.testID;
-    logger.info('Running Playwright test with ID: %s', testID);
-    testService.runTest(testID, 'playwright', res, wss);
+    logger.info('Starting Playwright test with ID: %s', testID);
+    await testService.runTest(testID, 'playwright', res, wss);
 };
 
-exports.runUFTTest = (req, res, wss) => {
+exports.runUFTTest = async (req, res, wss) => {
     const testID = req.params.testID;
-    logger.info('Running UFT test with ID: %s', testID);
-    testService.runTest(testID, 'uft', res, wss);
+    logger.info('Starting UFT test with ID: %s', testID);
+    await testService.runTest(testID, 'uft', res, wss);
 };
+
+//TODO: Maybe "runCustomCommand" in the future?
 
 exports.getTestResults = async (req, res) => {
     const testID = req.params.testID;
     logger.info('Retrieving test results for ID: %s', testID);
     await testService.getTestResults(testID, res);
-};
-
-exports.storeTestData = (req, res) => {
-    const testID = req.params.testID;
-    const testData = req.body;
-    logger.info('Storing test data for ID: %s', testID);
-    testService.storeTestData(testID, testData, res);
-};
-
-exports.getTestData = async (req, res) => {
-    const testID = req.params.testID;
-    logger.info('Retrieving test data for ID: %s', testID);
-    await testService.getTestData(testID, res);
 };
 
 exports.deleteTest = async (req, res, wss) => {
@@ -49,4 +42,27 @@ exports.deleteTest = async (req, res, wss) => {
 exports.deleteAllTests = async (req, res, wss) => {
     logger.info('Deleting all tests');
     await testService.deleteAllTests(res, wss);
+};
+
+//---------------------------------------------------------------------
+// FOR /TEST-DATA/
+//---------------------------------------------------------------------
+
+exports.getTestData = async (req, res) => {
+    const testDataID = req.params.testDataID;
+    logger.info('Retrieving test data for ID: %s', testDataID);
+    await testService.getTestData(testDataID, res);
+};
+
+exports.storeTestData = async (req, res) => {
+    const testDataID = req.params.testDataID;
+    const testData = req.body;
+    logger.info('Saving test data for ID: %s', testDataID);
+    await testService.storeTestData(testDataID, testData, res);
+};
+
+exports.deleteTestData = async (req, res, wss) => {
+    const testDataID = req.params.testDataID;
+    logger.info('Deleting test data with ID: %s', testDataID);
+    await testService.deleteTestData(testDataID, res, wss);
 };
