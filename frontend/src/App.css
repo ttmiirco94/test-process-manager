@@ -13,12 +13,25 @@ body {
     padding: 20px;
 }
 
-.header {
+.headerLogo {
     display: flex;
+    flex-direction: column; /* Change to column to stack elements vertically */
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: -25px; /* Reduce gap between lines */
+}
+
+.header {
+    display: flex;
+    flex-direction: column; /* Change to column to stack elements vertically */
+    align-items: center;
+    justify-content: center;
+    /*gap: -25px;  Reduce gap between lines */
     margin-bottom: 20px;
+}
+
+.sub-header {
+    font-size: 10px;
 }
 
 .logo {
@@ -26,7 +39,31 @@ body {
 }
 
 h1 {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px; /* Add some space below the tab buttons */
+    justify-content: center;
+}
+
+.tab {
+    background-color: #555555; /* Different background color */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.tab:hover {
+    background-color: #666666;
+}
+
+.tab.active {
+    background-color: #777777; /* Active tab color */
 }
 
 .button-group {

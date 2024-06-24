@@ -39,6 +39,7 @@ function App() {
     const [outputText, setOutputText] = useState('');
     const [selectedTestID, setSelectedTestID] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState('Test Output'); // State for active tab
     const componentRef = useRef();
 
     useEffect(() => {
@@ -178,49 +179,87 @@ function App() {
 
     return (
         <div className="App">
-            <header className="header">
+            <header className="headerLogo">
                 <ReturnSafeLogoComponent/>
             </header>
             <header className="header">
                 <h2>aityPilot - TestFlowManager</h2>
-                <h3>by Mirco Recknagel</h3>
+                <label className="sub-header">by Mirco Recknagel</label>
             </header>
             {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon"/>}
-            <div className={`button-group ${isLoading ? 'disabled' : ''}`}>
-                <div className="test-actions">
-                    <button className="test-command-button" onClick={() => !isLoading && setIsCommandModalOpen(true)}
-                            disabled={isLoading}>Test Command
-                    </button>
-                    <button className="start-test-button" onClick={() => !isLoading && setIsStartModalOpen(true)}
-                            disabled={isLoading}>Start Test
-                    </button>
-                    <button className="send-output-button" onClick={() => !isLoading && setIsOutputModalOpen(true)}
-                            disabled={isLoading}>Send Output
-                    </button>
-                </div>
-                <div className="print-report">
-                    <ReactToPrint
-                        trigger={() => <button className="print-button" disabled={isLoading}>Print Report</button>}
-                        content={() => componentRef.current}
-                    />
-                </div>
-                <div className="delete-all">
-                    <button className="delete-all-button" onClick={deleteAll} disabled={isLoading}>Delete All</button>
-                </div>
+            <div className="tabs">
+                <button
+                    className={`tab ${activeTab === 'Test Output' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('Test Output')}
+                >
+                    Test Output
+                </button>
+                <button
+                    className={`tab ${activeTab === 'Test-Data Store' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('Test-Data Store')}
+                >
+                    Test-Data Store
+                </button>
             </div>
-            <div ref={componentRef} className="test-container">
-                {Object.keys(tests).map((testID, index) => (
-                    <TestCard
-                        key={testID}
-                        testID={testID}
-                        type={tests[testID].type}
-                        output={tests[testID].output}
-                        index={index}
-                        deleteTest={deleteTest}
-                        isLoading={isLoading}
-                    />
-                ))}
-            </div>
+            {activeTab === 'Test Output' && (
+                <>
+                    <div className={`button-group ${isLoading ? 'disabled' : ''}`}>
+                        <div className="test-actions">
+                            <button className="test-command-button"
+                                    onClick={() => !isLoading && setIsCommandModalOpen(true)}
+                                    disabled={isLoading}>Test Command
+                            </button>
+                            <button className="start-test-button"
+                                    onClick={() => !isLoading && setIsStartModalOpen(true)}
+                                    disabled={isLoading}>Start Test
+                            </button>
+                            <button className="send-output-button"
+                                    onClick={() => !isLoading && setIsOutputModalOpen(true)}
+                                    disabled={isLoading}>Send Output
+                            </button>
+                        </div>
+                        <div className="print-report">
+                            <ReactToPrint
+                                trigger={() => <button className="print-button" disabled={isLoading}>Print
+                                    Report</button>}
+                                content={() => componentRef.current}
+                            />
+                        </div>
+                        <div className="delete-all">
+                            <button className="delete-all-button" onClick={deleteAll} disabled={isLoading}>Delete All
+                            </button>
+                        </div>
+                    </div>
+                    <div ref={componentRef} className="test-container">
+                        {Object.keys(tests).map((testID, index) => (
+                            <TestCard
+                                key={testID}
+                                testID={testID}
+                                type={tests[testID].type}
+                                output={tests[testID].output}
+                                index={index}
+                                deleteTest={deleteTest}
+                                isLoading={isLoading}
+                            />
+                        ))}
+                    </div>
+                </>
+            )}
+            {activeTab === 'Test-Data Store' && (
+                <div ref={componentRef} className="test-container">
+                    {Object.keys(tests).map((testID, index) => (
+                        <TestCard
+                            key={testID}
+                            testID={testID}
+                            type={tests[testID].type}
+                            output={tests[testID].output}
+                            index={index}
+                            deleteTest={deleteTest}
+                            isLoading={isLoading}
+                        />
+                    ))}
+                </div>
+            )}
 
             <Modal isOpen={isCommandModalOpen} onRequestClose={() => setIsCommandModalOpen(false)} className="modal"
                    overlayClassName="overlay">
@@ -308,7 +347,7 @@ function TestCard({testID, type, output, index, deleteTest, isLoading}) {
                 <div className="output">
                     {output.map((entry, i) => (
                         <div key={i} className="output-entry">
-                            <span className="timestamp">{formatDate(entry.timestamp)}</span> <ReturnSafeTextComponent text={entry.message}/>
+                            <span className="timestamp">{formatDate(entry.timestamp)}</span> <ReturnSafeTextComponent text={entry.message} />
                         </div>
                     ))}
                 </div>
