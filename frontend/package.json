@@ -1,7 +1,7 @@
 {
-  "name": "test-ui",
+  "name": "aitypilot-testflowmanager-ui",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",

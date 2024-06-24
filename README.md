@@ -10,15 +10,17 @@
   </a>
 </p>
 <p align="center">
-  <b>TestFlowManager is a full-stack application designed to control,start and share data between different TestAutomation tests through a WebSocket-enabled API.</b></br>
-  <span>The project consists of two main components: an Express Server API and a React Frontend. Written in Typescript & Javascript </span></br>
-  <sub>First Server, API and UI - made with the desire to learn by <a href="https://github.com/ttmiirco94">ttmiirco94</a>></sub>
+  <b>TestFlowManager is a full-stack application designed to control, start and share tests & test data between different TestAutomation Frameworks through a WebSocket-enabled API.</b></br>
+  <span>The project consists of three components: an Express Server/API, a React Frontend and a SQLite3 database.</span></br>
+  <sub>by <a href="https://github.com/ttmiirco94">ttmiirco94</a></sub>
 </p>
 <br/>
 
 ## Overview
 
-Test Process Manager is a full-stack application designed to control and start UI tests through a WebSocket-enabled API. The project consists of two main components: the backend API and the frontend UI.
+TestFlowManager is a full-stack application designed to control, start and share tests & test data between different TestAutomation Frameworks through a WebSocket-enabled API. The project consists of three components: an Express Server/API, a React Frontend and a SQLite3 database.
+
+# Documentation currently outdated due to frequently pushed changes & improvements
 
 ### Endpoint Diagram
 ![Alt text](\public\media\api_overview.png "API Overview")

@@ -1,8 +1,8 @@
 {
-  "name": "test-api",
-  "version": "1.0.0",
-  "description": "Test API with WebSocket to control and start UI tests",
+  "name": "aitypilot-testflowmanager-api",
+  "version": "0.1.0",
   "main": "server.js",
+  "private": false,
   "scripts": {
     "test": "mocha --recursive",
     "start": "node src/server.js"

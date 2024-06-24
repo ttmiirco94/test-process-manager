@@ -1,8 +1,9 @@
 {
   "name": "aitypilot-testflowmanager",
   "author": "Mirco Recknagel",
-  "version": "1.0.0",
-  "description": "aityPilot - TestFlowManager: is a full-stack application designed to control and start UI tests through a WebSocket-enabled API.",
+  "version": "0.1.0",
+  "private": false,
+  "description": "aityPilot - TestFlowManager: is a full-stack application designed to control, start and share tests & test data between different TestAutomation Frameworks through a WebSocket-enabled API.",
   "scripts": {
     "list-node-processes": "tasklist | findstr node.exe",
     "kill-node-processes": "taskkill /F /IM node.exe",
@@ -25,7 +26,6 @@
     "type": "git",
     "url": "https://github.com/ttmiirco94/test-process-manager.git"
   },
-  "private": false,
   "devDependencies": {
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3"
