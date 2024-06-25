@@ -6,6 +6,7 @@ const cors = require('cors');
 const { setupBasicAuth } = require('./utils/auth');
 const { initializeWebSocket} = require('./utils/websocketHelper');
 const testRoutes = require('./routes/testRoutes');
+const logRoutes = require('./routes/logRoutes');
 const createCustomLogger = require('./config/logger');
 const sequelize = require('./config/database');
 const path = require('path');
@@ -21,7 +22,7 @@ app.use(cors());
 app.use(bodyParser.json());
 setupBasicAuth(app);
 app.use('/api/tests', testRoutes);
-
+app.use('/logs', logRoutes)
 // Set the WebSocket server instance in the app
 app.set('wss', wss);
 

@@ -6,6 +6,7 @@ import {faCheckCircle, faTimesCircle, faSpinner} from '@fortawesome/free-solid-s
 import Modal from 'react-modal';
 import ReturnSafeTextComponent from './components/ReturnSafeTextComponent'; // Import the component
 import ReturnSafeLogoComponent from "./components/ReturnSafeLogoComponent";
+import LogViewer from "./components/LogViewer";
 
 Modal.setAppElement('#root');
 
@@ -280,16 +281,20 @@ function App() {
                             </button>
                         </div>
                     </div>
+                    <div>
+                        <h1>Log File Viewer</h1>
+                        <LogViewer username="admin" password="admin123!"/>
+                    </div>
                     <div ref={componentRef2} className="test-container">
                         {Object.keys(tests).map((testDataID, index) => (
                             <TestDataCard
-                                key={testID}
-                                testDataID={testID}
-                                type={tests[testID].type}
-                                testDataOutput={tests[testID].testDataOutput}
-                                index={index}
-                                deleteTest={deleteTest}
-                                isLoading={isLoading}
+                                // key={testID}
+                                // testDataID={testID}
+                                // type={tests[testID].type}
+                                // testDataOutput={tests[testID].testDataOutput}
+                                // index={index}
+                                // deleteTest={deleteTest}
+                                // isLoading={isLoading}
                             />
                         ))}
                     </div>
@@ -396,22 +401,24 @@ function TestDataCard({testDataID, type, testDataOutput, index, deleteTest, isLo
     const cardClass = index % 2 === 0 ? 'test-card darker' : 'test-card lighter';
 
     return (
-        <div className={cardClass}>
-            <h3>{`Test (${testDataID}) - ${type.toUpperCase()} Endpoint`}</h3>
-            <button onClick={() => !isLoading && deleteTest(testDataID)} className="delete-button" disabled={isLoading}>Delete</button>
-            <button onClick={() => setIsCollapsed(!isCollapsed)} className="toggle-button" disabled={isLoading}>
-                {isCollapsed ? 'Expand' : 'Collapse'}
-            </button>
-            {!isCollapsed && (
-                <div className="output">
-                    {testDataOutput.map((entry, i) => (
-                        <div key={i} className="output-entry">
-                            <span className="timestamp">{formatDate(entry.timestamp)}</span> <ReturnSafeTextComponent text={entry.message} />
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+        <>
+        </>
+        // <div className={cardClass}>
+        //     <h3>{`Test (${testDataID}) - ${type.toUpperCase()} Endpoint`}</h3>
+        //     <button onClick={() => !isLoading && deleteTest(testDataID)} className="delete-button" disabled={isLoading}>Delete</button>
+        //     <button onClick={() => setIsCollapsed(!isCollapsed)} className="toggle-button" disabled={isLoading}>
+        //         {isCollapsed ? 'Expand' : 'Collapse'}
+        //     </button>
+        //     {!isCollapsed && (
+        //         <div className="output">
+        //             {testDataOutput.map((entry, i) => (
+        //                 <div key={i} className="output-entry">
+        //                     <span className="timestamp">{formatDate(entry.timestamp)}</span> <ReturnSafeTextComponent text={entry.message} />
+        //                 </div>
+        //             ))}
+        //         </div>
+        //     )}
+        // </div>
     );
 }
 
