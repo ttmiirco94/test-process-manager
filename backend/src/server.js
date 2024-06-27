@@ -7,6 +7,7 @@ const { setupBasicAuth } = require('./utils/auth');
 const { initializeWebSocket} = require('./utils/websocketHelper');
 const testRoutes = require('./routes/testRoutes');
 const logRoutes = require('./routes/logRoutes');
+const testDataRoutes = require('./routes/testDataRoutes');
 const createCustomLogger = require('./config/logger');
 const sequelize = require('./config/database');
 const path = require('path');
@@ -21,9 +22,11 @@ const dbFilePath = path.join(__dirname, '../database.sqlite');
 app.use(cors());
 app.use(bodyParser.json());
 setupBasicAuth(app);
+
 app.use('/api/tests', testRoutes);
-app.use('/logs', logRoutes)
-// Set the WebSocket server instance in the app
+app.use('/logs', logRoutes);
+app.use('/test-data', testDataRoutes);
+
 app.set('wss', wss);
 
 process.on('unhandledRejection', (reason, promise) => {

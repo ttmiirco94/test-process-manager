@@ -14,12 +14,4 @@ router.delete('/:testID', (req, res) => { testController.deleteTest(req, res, re
 
 router.delete('/', (req, res) => { testController.deleteAllTests(req, res, req.app.get('wss')); });
 
-router.get('/test-data/:testID', testController.getTestData);
-
-router.post('/test-data/:testID', testController.storeTestData);
-
-router.delete('/test-data/:testID', testController.deleteTestData);
-
-//TODO: in server.js implement 2. route with api/test-data/, then split this file in 2 (tests/test-data)
-
 module.exports = router;

@@ -43,26 +43,3 @@ exports.deleteAllTests = async (req, res, wss) => {
     logger.info('Deleting all tests');
     await testService.deleteAllTests(res, wss);
 };
-
-//---------------------------------------------------------------------
-// FOR /TEST-DATA/
-//---------------------------------------------------------------------
-
-exports.getTestData = async (req, res) => {
-    const testDataID = req.params.testDataID;
-    logger.info('Retrieving test data for ID: %s', testDataID);
-    await testService.getTestData(testDataID, res);
-};
-
-exports.storeTestData = async (req, res) => {
-    const testDataID = req.params.testDataID;
-    const testData = req.body;
-    logger.info('Saving test data for ID: %s', testDataID);
-    await testService.storeTestData(testDataID, testData, res);
-};
-
-exports.deleteTestData = async (req, res, wss) => {
-    const testDataID = req.params.testDataID;
-    logger.info('Deleting test data with ID: %s', testDataID);
-    await testService.deleteTestData(testDataID, res, wss);
-};
