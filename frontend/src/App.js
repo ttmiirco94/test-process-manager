@@ -6,7 +6,7 @@ import {faCheckCircle, faTimesCircle, faSpinner} from '@fortawesome/free-solid-s
 import Modal from 'react-modal';
 import ReturnSafeTextComponent from './components/ReturnSafeTextComponent'; // Import the component
 import ReturnSafeLogoComponent from "./components/ReturnSafeLogoComponent";
-import LogViewer from "./components/LogViewer";
+import LogViewerV4 from "./components/LogViewerV4";
 
 Modal.setAppElement('#root');
 
@@ -20,7 +20,7 @@ function formatDate(isoString) {
     const day = pad(date.getUTCDate());
     const month = pad(date.getUTCMonth() + 1); // Months are zero-indexed
     const year = date.getUTCFullYear();
-    const hours = pad(date.getUTCHours());
+    const hours = pad(date.getUTCHours() + 2);
     const minutes = pad(date.getUTCMinutes());
     const seconds = pad(date.getUTCSeconds());
 
@@ -113,7 +113,7 @@ function App() {
     const getTestData = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:3001/api/tests/retrieve/${testDataID}`, {
+            const response = await fetch(`http://localhost:3001/api/tests/results/${testDataID}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': authHeader,
@@ -222,6 +222,12 @@ function App() {
                 >
                     Test-Data Store
                 </button>
+                <button
+                    className={`tab ${activeTab === 'Log-Viewer' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('Log-Viewer')}
+                >
+                    Log-Viewer
+                </button>
             </div>
             {activeTab === 'Test Output' && (
                 <>
@@ -283,20 +289,28 @@ function App() {
                     </div>
                     <div>
                         <h1>Log File Viewer</h1>
-                        <LogViewer username="admin" password="admin123!"/>
+                        <LogViewerV4/>
                     </div>
-                    <div ref={componentRef2} className="test-container">
-                        {Object.keys(tests).map((testDataID, index) => (
-                            <TestDataCard
-                                // key={testID}
-                                // testDataID={testID}
-                                // type={tests[testID].type}
-                                // testDataOutput={tests[testID].testDataOutput}
-                                // index={index}
-                                // deleteTest={deleteTest}
-                                // isLoading={isLoading}
-                            />
-                        ))}
+                    {/*<div ref={componentRef2} className="test-container">*/}
+                    {/*    {Object.keys(tests).map((testDataID, index) => (*/}
+                    {/*        <TestDataCard*/}
+                    {/*            // key={testID}*/}
+                    {/*            // testDataID={testID}*/}
+                    {/*            // type={tests[testID].type}*/}
+                    {/*            // testDataOutput={tests[testID].testDataOutput}*/}
+                    {/*            // index={index}*/}
+                    {/*            // deleteTest={deleteTest}*/}
+                    {/*            // isLoading={isLoading}*/}
+                    {/*        />*/}
+                    {/*    ))}*/}
+                    {/*</div>*/}
+                </>
+            )}
+            {activeTab === 'Log-Viewer' && (
+                <>
+                    <div className="test-container">
+                        <h1>Server Log Viewer</h1>
+                        <LogViewerV4/>
                     </div>
                 </>
             )}
