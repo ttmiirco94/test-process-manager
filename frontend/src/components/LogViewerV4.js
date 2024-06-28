@@ -155,7 +155,7 @@ const LogViewerV4 = () => {
                     </FormControl>
                     <TextField
                         variant="outlined"
-                        label="Enter message to filter"
+                        placeholder="Enter message to filter"
                         value={filterMessage}
                         onChange={handleFilterMessageChange}
                         style={{ marginRight: 10 }}
