@@ -7,6 +7,7 @@ import Modal from 'react-modal';
 import ReturnSafeTextComponent from './components/ReturnSafeTextComponent'; // Import the component
 import ReturnSafeLogoComponent from "./components/ReturnSafeLogoComponent";
 import LogViewerV4 from "./components/LogViewerV4";
+import DataStoreViewer from "./components/DataStoreViewer";
 
 Modal.setAppElement('#root');
 
@@ -214,19 +215,19 @@ function App() {
                     className={`tab ${activeTab === 'Test Output' ? 'active' : ''}`}
                     onClick={() => setActiveTab('Test Output')}
                 >
-                    Test Output
+                    Test Results
                 </button>
                 <button
-                    className={`tab ${activeTab === 'Test-Data Store' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('Test-Data Store')}
+                    className={`tab ${activeTab === 'DataStore-Viewer' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('DataStore-Viewer')}
                 >
-                    Test-Data Store
+                    DataStore Viewer
                 </button>
                 <button
                     className={`tab ${activeTab === 'Log-Viewer' ? 'active' : ''}`}
                     onClick={() => setActiveTab('Log-Viewer')}
                 >
-                    Log-Viewer
+                    Log Viewer
                 </button>
             </div>
             {activeTab === 'Test Output' && (
@@ -273,23 +274,23 @@ function App() {
                     </div>
                 </>
             )}
-            {activeTab === 'Test-Data Store' && (
+            {activeTab === 'DataStore-Viewer' && (
                 <>
-                    <div className={`button-group ${isLoading ? 'disabled' : ''}`}>
-                        <div className="test-actions">
-                            <button className="get-test-data-button"
-                                    onClick={getTestData}
-                                    disabled={isLoading}>Get Test-Data
-                            </button>
-                        </div>
-                        <div className="delete-all">
-                            <button className="delete-all-button" onClick={deleteAll} disabled={isLoading}>Delete All
-                            </button>
-                        </div>
-                    </div>
-                    <div>
-                        <h1>Log File Viewer</h1>
-                        <LogViewerV4/>
+                    {/*<div className={`button-group ${isLoading ? 'disabled' : ''}`}>*/}
+                    {/*    <div className="test-actions">*/}
+                    {/*        <button className="get-test-data-button"*/}
+                    {/*                onClick={getTestData}*/}
+                    {/*                disabled={isLoading}>Get Test-Data*/}
+                    {/*        </button>*/}
+                    {/*    </div>*/}
+                    {/*    <div className="delete-all">*/}
+                    {/*        <button className="delete-all-button" onClick={deleteAll} disabled={isLoading}>Delete All*/}
+                    {/*        </button>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
+                    <div className="test-container">
+                        <h1>DataStore Viewer</h1>
+                        <DataStoreViewer/>
                     </div>
                     {/*<div ref={componentRef2} className="test-container">*/}
                     {/*    {Object.keys(tests).map((testDataID, index) => (*/}

@@ -28,7 +28,7 @@ setupBasicAuth(app);
 app.use('/api/tests', testRoutes);
 app.use('/logs', logRoutes);
 app.use('/test-data', testDataRoutes);
-app.use('/data-store', dataStoreRoutes);
+app.use('/api/data-store', dataStoreRoutes);
 
 app.set('wss', wss);
 
