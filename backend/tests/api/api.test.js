@@ -27,3 +27,14 @@ describe('API Tests for /logs', () => {
         expect(res.status).toBe(200);
     });
 });
+
+describe('API Tests for /data-store', () => {
+    it('should post data store', async () => {
+        const res = await request(baseURL)
+            .post('/data-store/TST-1')
+            .send({key: "exampleKeyName", value: "exampleValueName"})
+            .auth('admin', 'admin123!');
+        console.log(res.body);
+        expect(res.status).toBe(200);
+    });
+});

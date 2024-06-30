@@ -8,6 +8,7 @@ const { initializeWebSocket} = require('./utils/websocketHelper');
 const testRoutes = require('./routes/testRoutes');
 const logRoutes = require('./routes/logRoutes');
 const testDataRoutes = require('./routes/testDataRoutes');
+const dataStoreRoutes = require('./routes/dataStoreRoutes')
 const createCustomLogger = require('./config/logger');
 const sequelize = require('./config/database');
 const path = require('path');
@@ -27,6 +28,7 @@ setupBasicAuth(app);
 app.use('/api/tests', testRoutes);
 app.use('/logs', logRoutes);
 app.use('/test-data', testDataRoutes);
+app.use('/data-store', dataStoreRoutes);
 
 app.set('wss', wss);
 

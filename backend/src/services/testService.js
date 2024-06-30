@@ -66,7 +66,7 @@ exports.getTestResults = async (testID, res) => {
             }
         });
         if (!test) {
-            logger.error('Test results not found for ID: %s', testID);
+            logger.warn('Test results not found for ID: %s', testID);
             return res.status(404).json({ error: 'Test results not found for the given test ID' });
         }
         logger.info('Returning test results for ID: %s', testID);
@@ -87,7 +87,7 @@ exports.getAllTestResults = async (res) => {
             }
         });
         if (!test) {
-            logger.error('Could not find any test result');
+            logger.warn('Could not find any test result records');
             return res.status(404).json({ error: 'Could not find any test result' });
         }
         logger.info('Returning all test results:');
@@ -106,7 +106,7 @@ exports.deleteTest = async (testID, res, wss) => {
             await test.destroy();
             res.sendStatus(200);
         } else {
-            logger.error('Test not found with ID: %s', testID);
+            logger.warn('Test not found with ID: %s', testID);
             res.sendStatus(404);
         }
     } catch (error) {

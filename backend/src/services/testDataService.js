@@ -18,7 +18,7 @@ exports.getTestData = async (testDataID, res) => {
             }
         });
         if (!testData) {
-            logger.error('Test data not found for ID: %s', testDataID);
+            logger.warn('Test data not found for ID: %s', testDataID);
             return res.status(404).json({ error: 'No TestData found for testDataID: %s', testDataID });
         }
         logger.info('Returning TestData for ID: %s', testDataID);
@@ -34,7 +34,7 @@ exports.storeTestData = async (testDataID, testData, res, wss) => {
     try {
         const testDataParent = await TestData.findByPk(testDataID);
         if (!testDataParent) {
-            logger.error('TestData ID not found: %s', testDataID);
+            logger.warn('TestData ID not found: %s', testDataID);
             return res.status(404).json({ error: 'Test ID not found' });
         }
         await TestDataOutput.create({
@@ -59,7 +59,7 @@ exports.deleteTestData = async (testDataID, res, wss) => {
             await testData.destroy();
             res.sendStatus(200);
         } else {
-            logger.error('TestData not found with ID: %s', testDataID);
+            logger.warn('TestData not found with ID: %s', testDataID);
             res.sendStatus(404);
         }
     } catch (error) {
