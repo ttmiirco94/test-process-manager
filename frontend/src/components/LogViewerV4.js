@@ -7,6 +7,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
 
+// noinspection JSUnusedLocalSymbols
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
@@ -18,6 +19,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
 }));
 
+// noinspection JSUnusedLocalSymbols
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
         backgroundColor: '#5e5e5e',
@@ -39,6 +41,7 @@ const LogViewerV4 = () => {
     const [autoUpdate, setAutoUpdate] = useState(false);
 
     const fetchData = useCallback(async () => {
+        resetFilters();
         try {
             const response = await axios.get('http://localhost:3001/logs/v2', {
                 auth: {
@@ -64,6 +67,7 @@ const LogViewerV4 = () => {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -107,10 +111,6 @@ const LogViewerV4 = () => {
         }
 
         setModifiedData(filteredData);
-    };
-
-    const handleFilterMessageClick = () => {
-        applyFilters(filterLevel, filterMessage);
     };
 
     const resetFilters = () => {
@@ -170,9 +170,6 @@ const LogViewerV4 = () => {
                             }
                         }}
                     />
-                    <Button variant="contained" color="primary" onClick={handleFilterMessageClick} style={{ marginRight: 10 }}>
-                        Filter Message
-                    </Button>
                     <Button variant="contained" onClick={resetFilters}>
                         Reset Filters
                     </Button>

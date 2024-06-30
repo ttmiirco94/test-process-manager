@@ -8,6 +8,7 @@ import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
 const dateUtils = require('../utils/date-utils');
 
+// noinspection JSUnusedLocalSymbols
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
@@ -19,7 +20,8 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
 }));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
+// noinspection JSUnusedLocalSymbols
+const StyledTableRow = styled(TableRow)(() => ({
     '&:nth-of-type(odd)': {
         backgroundColor: '#5e5e5e',
     },
@@ -40,6 +42,7 @@ const DataStoreViewer = () => {
     const [autoUpdate, setAutoUpdate] = useState(false);
 
     const fetchData = useCallback(async () => {
+        resetFilters();
         try {
             const response = await axios.get('http://localhost:3001/api/data-store/', {
                 auth: {
@@ -59,6 +62,7 @@ const DataStoreViewer = () => {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -102,10 +106,6 @@ const DataStoreViewer = () => {
         }
 
         setModifiedData(filteredData);
-    };
-
-    const handleFilterValueClick = () => {
-        applyFilters(filterTestID, filterValue);
     };
 
     const resetFilters = () => {
@@ -165,9 +165,6 @@ const DataStoreViewer = () => {
                             }
                         }}
                     />
-                    <Button variant="contained" color="primary" onClick={handleFilterValueClick} style={{ marginRight: 10 }}>
-                        Filter Value
-                    </Button>
                     <Button variant="contained" onClick={resetFilters}>
                         Reset Filters
                     </Button>
@@ -208,8 +205,8 @@ const DataStoreViewer = () => {
                                     <StyledTableCell component="cell" scope="row">{entry.testID}</StyledTableCell>
                                     <StyledTableCell component="cell" scope="row">{entry.key}</StyledTableCell>
                                     <StyledTableCell component="cell" scope="row">{entry.value}</StyledTableCell>
-                                    <StyledTableCell component="cell" scope="row">{dateUtils.getFormattedIsoDate(entry.createdAt)}</StyledTableCell>
-                                    <StyledTableCell component="cell" scope="row">{dateUtils.getFormattedIsoDate(entry.updatedAt)}</StyledTableCell>
+                                    <StyledTableCell component="cell" scope="row">{dateUtils.getFormattedIsoDate(entry["createdAt"])}</StyledTableCell>
+                                    <StyledTableCell component="cell" scope="row">{dateUtils.getFormattedIsoDate(entry["updatedAt"])}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>
