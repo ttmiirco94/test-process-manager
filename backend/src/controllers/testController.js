@@ -33,6 +33,11 @@ exports.getTestResults = async (req, res) => {
     await testService.getTestResults(testID, res);
 };
 
+exports.getAllTestResults = async (req, res) => {
+    logger.info('Retrieving all test results');
+    await testService.getAllTestResults(res);
+};
+
 exports.deleteTest = async (req, res, wss) => {
     const testID = req.params.testID;
     logger.info('Deleting test with ID: %s', testID);

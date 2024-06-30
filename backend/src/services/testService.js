@@ -78,6 +78,27 @@ exports.getTestResults = async (testID, res) => {
 };
 
 //IMPLEMENTED
+exports.getAllTestResults = async (res) => {
+    try {
+        const test = await Test.findAll({
+            include: {
+                model: TestOutput,
+                as: 'TestOutputs'
+            }
+        });
+        if (!test) {
+            logger.error('Could not find any test result');
+            return res.status(404).json({ error: 'Could not find any test result' });
+        }
+        logger.info('Returning all test results:');
+        res.status(200).json(test);
+    } catch (error) {
+        logger.error('Error retrieving all test results - %s', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+//IMPLEMENTED
 exports.deleteTest = async (testID, res, wss) => {
     try {
         const test = await Test.findByPk(testID);
