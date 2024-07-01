@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-    Select, MenuItem, FormControl, InputLabel, Button, TextField, FormControlLabel, Checkbox
+    Select, MenuItem, FormControl, InputLabel, Button, TextField, FormControlLabel, Checkbox, TablePagination
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
+
 const dateUtils = require('../utils/date-utils');
 
 // noinspection JSUnusedLocalSymbols
@@ -40,11 +41,13 @@ const DataStoreViewer = () => {
     const [filterValue, setFilterValue] = useState('');
     const [testIDs, setTestIDs] = useState(['all']);
     const [autoUpdate, setAutoUpdate] = useState(false);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const fetchData = useCallback(async () => {
         resetFilters();
         try {
-            const response = await axios.get('http://localhost:3001/api/data-store/', {
+            const response = await axios.get('http://localhost:3001/api/data-store/true', {
                 auth: {
                     username: 'admin',
                     password: 'admin123!'
@@ -106,6 +109,7 @@ const DataStoreViewer = () => {
         }
 
         setModifiedData(filteredData);
+        setPage(0);
     };
 
     const resetFilters = () => {
@@ -116,6 +120,15 @@ const DataStoreViewer = () => {
 
     const handleAutoUpdateChange = (event) => {
         setAutoUpdate(event.target.checked);
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
     };
 
     return (
@@ -200,17 +213,33 @@ const DataStoreViewer = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {modifiedData.map((entry) => (
+                            {modifiedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((entry) => (
                                 <StyledTableRow key={`${entry.testID}-${entry.key}`}>
                                     <StyledTableCell component="cell" scope="row">{entry.testID}</StyledTableCell>
                                     <StyledTableCell component="cell" scope="row">{entry.key}</StyledTableCell>
                                     <StyledTableCell component="cell" scope="row">{entry.value}</StyledTableCell>
-                                    <StyledTableCell component="cell" scope="row">{dateUtils.getFormattedIsoDate(entry["createdAt"])}</StyledTableCell>
-                                    <StyledTableCell component="cell" scope="row">{dateUtils.getFormattedIsoDate(entry["updatedAt"])}</StyledTableCell>
+                                    <StyledTableCell component="cell" scope="row">{dateUtils.formatDatabaseDate(entry["createdAt"])}</StyledTableCell>
+                                    <StyledTableCell component="cell" scope="row">{dateUtils.formatDatabaseDate(entry["updatedAt"])}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        sx={{
+                            backgroundColor: "#252525",
+                            color: "#ffffff",
+                            borderLeft: "solid 1px white",
+                            borderRight: "solid 1px white",
+                            borderBottom: "solid 1px white"
+                        }}
+                        count={modifiedData.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
                 </TableContainer>
             </div>
         </div>

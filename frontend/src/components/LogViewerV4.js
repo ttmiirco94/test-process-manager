@@ -1,11 +1,13 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-    Select, MenuItem, FormControl, InputLabel, Button, TextField, FormControlLabel, Checkbox
+    Select, MenuItem, FormControl, InputLabel, Button, TextField, FormControlLabel, Checkbox, TablePagination
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
+
+const dateUtils = require('../utils/date-utils');
 
 // noinspection JSUnusedLocalSymbols
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -39,6 +41,8 @@ const LogViewerV4 = () => {
     const [filterMessage, setFilterMessage] = useState('');
     const [logLevels, setLogLevels] = useState([]);
     const [autoUpdate, setAutoUpdate] = useState(false);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const fetchData = useCallback(async () => {
         resetFilters();
@@ -111,16 +115,27 @@ const LogViewerV4 = () => {
         }
 
         setModifiedData(filteredData);
+        setPage(0); // Reset to the first page
     };
 
     const resetFilters = () => {
         setFilterLevel('all');
         setFilterMessage('');
         setModifiedData(originalData);
+        setPage(0); // Reset to the first page
     };
 
     const handleAutoUpdateChange = (event) => {
         setAutoUpdate(event.target.checked);
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
     };
 
     return (
@@ -179,7 +194,7 @@ const LogViewerV4 = () => {
                     <FormControlLabel
                         control={<Checkbox checked={autoUpdate} onChange={handleAutoUpdateChange} />}
                         label="Auto Update"
-                        style={{ borderColor: 'white',color: 'white', marginLeft: 10 }}
+                        style={{ borderColor: 'white', color: 'white', marginLeft: 10 }}
                         sx={{
                             color: 'white',
                             borderColor: 'white',
@@ -204,9 +219,9 @@ const LogViewerV4 = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {modifiedData.map((entry) => (
+                            {modifiedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((entry) => (
                                 <StyledTableRow key={entry.key}>
-                                    <StyledTableCell component="cell" scope="row">{entry.timestamp}</StyledTableCell>
+                                    <StyledTableCell component="cell" scope="row">{dateUtils.formatDatabaseDate(entry.timestamp)}</StyledTableCell>
                                     <StyledTableCell component="cell" scope="row">{entry.level}</StyledTableCell>
                                     <StyledTableCell component="cell" scope="row">{entry.message}</StyledTableCell>
                                     <StyledTableCell component="cell" scope="row">{entry.from}</StyledTableCell>
@@ -214,6 +229,22 @@ const LogViewerV4 = () => {
                             ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        sx={{
+                            backgroundColor: "#252525",
+                            color: "#ffffff",
+                            borderLeft: "solid 1px white",
+                            borderRight: "solid 1px white",
+                            borderBottom: "solid 1px white"
+                        }}
+                        count={modifiedData.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
                 </TableContainer>
             </div>
         </div>

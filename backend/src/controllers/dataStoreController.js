@@ -5,8 +5,13 @@ const logger = createCustomLogger('dataStoreController.js');
 
 //Return all key+value records containing testID
 exports.getAllDataStoreRecords = async (req, res) => {
+    const forUI = req.params['forUI'];
     logger.info('Retrieving all data store records');
-    await dataStoreService.getAllDataStoreRecords(res);
+    if(forUI === true || forUI === 'true') {
+        await dataStoreService.getAllDataStoreRecordsForUI(res);
+    } else {
+        await dataStoreService.getAllDataStoreRecords(res);
+    }
 };
 
 //Return all key+value records containing testID
@@ -28,8 +33,8 @@ exports.getSpecificDataStoreForTest = async (req, res) => {
 //If pair testID+key exists, update record
 exports.newDataStoreForTest = async (req, res, wss) => {
     const testID = req.params.testID;
-    const key = req.body["key"]
-    const valueOfKey = req.body["value"];
+    const key = req.body['key']
+    const valueOfKey = req.body['value'];
     logger.info('New data store for testID: %s, with key: %s and value: %s', testID, key, valueOfKey);
     await dataStoreService.newDataStoreForTest(testID, key, valueOfKey, res, wss);
 };

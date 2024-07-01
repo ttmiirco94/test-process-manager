@@ -297,3 +297,7 @@ th {
 td {
     background-color: papayawhip;
 }
+
+.MuiPaginationItem-root {
+    color: #ffffff;
+}
