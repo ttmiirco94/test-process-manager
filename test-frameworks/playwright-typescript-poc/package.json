@@ -17,21 +17,7 @@
     "test:e2e:transactions": "playwright test --config=e2e.config.ts --grep @transactions",
     "playwright:ui": "playwright test --ui"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/michalkasiarz/playwright-poc.git"
-  },
-  "keywords": [
-    "playwright",
-    "test",
-    "automation"
-  ],
-  "author": "Michal Kasiarz",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/michalkasiarz/playwright-poc/issues"
-  },
-  "homepage": "https://github.com/michalkasiarz/playwright-poc#readme",
   "devDependencies": {
     "@playwright/test": "^1.44.1",
     "@types/node": "^20.14.2",

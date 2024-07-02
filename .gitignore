@@ -16,5 +16,6 @@
 /test-frameworks/**/test-results
 /test-frameworks/**/playwright-report
 /test-frameworks/**/target
+/test-frameworks/uft-example-script
 combined.log
 error.log
