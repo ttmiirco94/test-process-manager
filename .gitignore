@@ -17,5 +17,6 @@
 /test-frameworks/**/playwright-report
 /test-frameworks/**/target
 /test-frameworks/uft-example-script
+/test-frameworks/otms-python
 combined.log
 error.log
