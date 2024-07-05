@@ -104,7 +104,8 @@ const DataStoreViewer = () => {
         if (value) {
             filteredData = filteredData.filter(entry =>
                 entry.value.toLowerCase().includes(value.toLowerCase()) ||
-                entry.key.toLowerCase().includes(value.toLowerCase())
+                entry.key.toLowerCase().includes(value.toLowerCase()) ||
+                entry.testID.toLowerCase().includes(value.toLowerCase())
             );
         }
 
