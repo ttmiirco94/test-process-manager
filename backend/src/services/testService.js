@@ -1,8 +1,6 @@
 const path = require('path');
 const Test = require('../models/Test');
 const TestOutput = require('../models/TestOutput');
-const TestData = require('../models/TestData');
-const TestDataOutput = require('../models/TestDataOutput');
 const { execTestAndRespond } = require('../utils/execHelper');
 const { broadcastTests } = require('../utils/websocketHelper');
 const createCustomLogger = require('../config/logger');

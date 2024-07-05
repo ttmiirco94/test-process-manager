@@ -7,7 +7,6 @@ const { setupBasicAuth } = require('./utils/auth');
 const { initializeWebSocket} = require('./utils/websocketHelper');
 const testRoutes = require('./routes/testRoutes');
 const logRoutes = require('./routes/logRoutes');
-const testDataRoutes = require('./routes/testDataRoutes');
 const dataStoreRoutes = require('./routes/dataStoreRoutes')
 const createCustomLogger = require('./config/logger');
 const sequelize = require('./config/database');
@@ -50,7 +49,7 @@ sequelize.sync().then(() => {
             if (renameErr) {
                 logger.error('Failed to rename database file: ', renameErr);
                 logger.error('Application will now force shutdown.');
-                process.exit(1);
+                process. exitCode = 1;
             } else {
                 logger.info(`Database backup file renamed to ${backupFileName}`);
             }
@@ -64,7 +63,7 @@ sequelize.sync().then(() => {
         }).catch(err => {
             logger.error('Failed to sync new created database: ', err);
             logger.error('Application will now force shutdown.');
-            process.exit(1);
+            process. exitCode = 1;
         });
     }
 });
