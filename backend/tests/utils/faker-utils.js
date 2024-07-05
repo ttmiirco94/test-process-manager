@@ -1,7 +1,11 @@
-const { faker } = require('@faker-js/faker');
+const { faker, fakerDE_CH } = require('@faker-js/faker');
 
 class FakerUtils {
     static faker = faker;
 }
 
-module.exports = { FakerUtils };
+class FakerUtilsCH {
+    static faker = fakerDE_CH;
+}
+
+module.exports = { FakerUtils, FakerUtilsCH };
