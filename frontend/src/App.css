@@ -160,9 +160,9 @@ h1 {
 
 .timestamp {
     color: #888;
-    font-size: 0.9em;
+    font-size: 0.8em;
     display: inline-block;
-    width: 100px; /* Adjust width to match the timestamp column width */
+    width: 110px; /* Adjust width to match the timestamp column width */
     flex-shrink: 0; /* Prevent shrinking */
 }
 
