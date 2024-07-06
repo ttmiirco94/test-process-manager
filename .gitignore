@@ -18,5 +18,6 @@
 /test-frameworks/**/target
 /test-frameworks/uft-example-script
 /test-frameworks/otms-python
+/backup
 combined.log
 error.log
