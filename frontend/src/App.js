@@ -2,13 +2,12 @@ import React, {useEffect, useState, useRef} from 'react';
 import './App.css';
 import ReactToPrint from 'react-to-print';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCheckCircle, faTimesCircle, faSpinner} from '@fortawesome/free-solid-svg-icons';
+import {faSpinner} from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
-import ReturnSafeTextComponent from './components/ReturnSafeTextComponent'; // Import the component
+import TestCard from './components/TestCard';
 import ReturnSafeLogoComponent from './components/ReturnSafeLogoComponent';
 import LogViewerV4 from './components/LogViewerV4';
 import DataStoreViewer from './components/DataStoreViewer';
-import DateUtils from './utils/date-utils'
 
 Modal.setAppElement('#root');
 
@@ -22,7 +21,10 @@ function App() {
     const [selectedEndpoint, setSelectedEndpoint] = useState('selenium');
     const [testID, setTestID] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState('Test Output'); // State for active tab
+    const [activeTab, setActiveTab] = useState('Test Controller'); // State for active tab
+    const [isQueueModalOpen, setIsQueueModalOpen] = useState(false);
+    const [queueCount, setQueueCount] = useState(1);
+    const [queueTests, setQueueTests] = useState([{ framework: 'selenium', testID: '' }]);
     const componentRef = useRef();
 
     useEffect(() => {
@@ -109,6 +111,60 @@ function App() {
         setTests({});
     };
 
+    const openQueueModal = () => {
+        setIsQueueModalOpen(true);
+    };
+
+    const closeQueueModal = () => {
+        setIsQueueModalOpen(false);
+        setQueueCount(1);
+        setQueueTests([{ framework: 'selenium', testID: '' }]);
+    };
+
+    const handleQueueCountChange = (e) => {
+        const newCount = parseInt(e.target.value);
+        setQueueCount(newCount);
+        setQueueTests(prevTests => {
+            if (newCount > prevTests.length) {
+                return [...prevTests, ...Array(newCount - prevTests.length).fill().map(() => ({ framework: 'selenium', testID: '' }))];
+            } else {
+                return prevTests.slice(0, newCount);
+            }
+        });
+    };
+
+    const handleQueueTestChange = (index, field, value) => {
+        setQueueTests(prevTests => {
+            const newTests = [...prevTests];
+            newTests[index] = { ...newTests[index], [field]: value };
+            return newTests;
+        });
+    };
+
+    const startQueueTests = async () => {
+        setIsLoading(true);
+        for (const test of queueTests) {
+            try {
+                const response = await fetch(`http://localhost:3001/api/tests/${test.framework}/${test.testID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': authHeader,
+                    },
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Error starting test ${test.testID}: ${errorData.error}`);
+                    break;
+                }
+            } catch (error) {
+                alert(`An error occurred while starting test ${test.testID}.`);
+                break;
+            }
+        }
+        setIsLoading(false);
+        closeQueueModal();
+    };
+
     return (
         <div className="App">
             <header className="headerLogo">
@@ -121,10 +177,10 @@ function App() {
             {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon"/>}
             <div className="tabs">
                 <button
-                    className={`tab ${activeTab === 'Test Output' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('Test Output')}
+                    className={`tab ${activeTab === 'Test Controller' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('Test Controller')}
                 >
-                    Test Results
+                    Test Controller
                 </button>
                 <button
                     className={`tab ${activeTab === 'DataStore-Viewer' ? 'active' : ''}`}
@@ -139,13 +195,17 @@ function App() {
                     Log Viewer
                 </button>
             </div>
-            {activeTab === 'Test Output' && (
+            {activeTab === 'Test Controller' && (
                 <>
                     <div className={`button-group ${isLoading ? 'disabled' : ''}`}>
                         <div className="test-actions">
                             <button className="start-test-button"
                                     onClick={() => !isLoading && setIsStartModalOpen(true)}
                                     disabled={isLoading}>Start Test
+                            </button>
+                            <button className="queue-test-button" onClick={() => !isLoading && openQueueModal()}
+                                    disabled={isLoading}>
+                                Queue Test
                             </button>
                         </div>
                         <div className="print-report">
@@ -193,8 +253,7 @@ function App() {
             )}
 
             {/*Start Test Dialog*/}
-            <Modal isOpen={isStartModalOpen} onRequestClose={() => setIsStartModalOpen(false)} className="modal"
-                   overlayClassName="overlay">
+            <Modal isOpen={isStartModalOpen} onRequestClose={() => setIsStartModalOpen(false)} className="modal" overlayClassName="overlay">
                 <h2>Start Test</h2>
                 {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon"/>}
                 <div>
@@ -213,37 +272,51 @@ function App() {
                 <button onClick={startTest} disabled={isLoading}>Send Request</button>
                 <button onClick={() => setIsStartModalOpen(false)} disabled={isLoading}>Close</button>
             </Modal>
-        </div>
-    );
-}
 
-function TestCard({testID, type, output, index, deleteTest, isLoading}) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const cardClass = index % 2 === 0 ? 'test-card darker' : 'test-card lighter';
-    const lastStatus = output.map(o => o.message).reverse().find(message => message.includes("500:failed") || message.includes("200:success"));
-    const status = lastStatus?.includes("500:failed") ? 'failed' : lastStatus?.includes("200:success") ? 'success' : null;
-
-    return (
-        <div className={cardClass}>
-            <h3>{`Test (${testID}) - ${type.toUpperCase()} Endpoint`}</h3>
-            <button onClick={() => !isLoading && deleteTest(testID)} className="delete-button" disabled={isLoading}>Delete</button>
-            <button onClick={() => setIsCollapsed(!isCollapsed)} className="toggle-button" disabled={isLoading}>
-                {isCollapsed ? 'Expand' : 'Collapse'}
-            </button>
-            {status && (
-                <span className={`status-icon ${status}`}>
-                    {status === 'success' ? <FontAwesomeIcon icon={faCheckCircle} /> : <FontAwesomeIcon icon={faTimesCircle} />}
-                </span>
-            )}
-            {!isCollapsed && (
-                <div className="output">
-                    {output.map((entry, i) => (
-                        <div key={i} className="output-entry">
-                            <span className="timestamp">{DateUtils.getFormattedIsoDate(entry.timestamp)}</span> <ReturnSafeTextComponent text={entry.message} />
-                        </div>
-                    ))}
+            {/*Queue Tests Dialog*/}
+            <Modal isOpen={isQueueModalOpen} onRequestClose={closeQueueModal} className="modal" overlayClassName="overlay">
+            <h2>Queue Tests</h2>
+            {isLoading && <FontAwesomeIcon icon={faSpinner} spin className="loading-icon"/>}
+            <div>
+                <label>Number of tests to queue:</label>
+                <input
+                    type="number"
+                    min="1"
+                    value={queueCount}
+                    onChange={handleQueueCountChange}
+                    disabled={isLoading}
+                />
+            </div>
+            {queueTests.map((test, index) => (
+                <div key={index}>
+                    <h3>Test {index + 1}</h3>
+                    <div>
+                        <label>Framework:</label>
+                        <select
+                            value={test.framework}
+                            onChange={(e) => handleQueueTestChange(index, 'framework', e.target.value)}
+                            disabled={isLoading}
+                        >
+                            <option value="selenium">Selenium</option>
+                            <option value="playwright">Playwright</option>
+                            <option value="uft">UFT</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Test ID:</label>
+                        <input
+                            type="text"
+                            value={test.testID}
+                            onChange={(e) => handleQueueTestChange(index, 'testID', e.target.value)}
+                            disabled={isLoading}
+                        />
+                    </div>
                 </div>
-            )}
+            ))}
+            <button onClick={startQueueTests} disabled={isLoading}>Start Queue</button>
+            <button onClick={closeQueueModal} disabled={isLoading}>Close</button>
+        </Modal>
+
         </div>
     );
 }
